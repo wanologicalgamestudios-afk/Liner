@@ -22,6 +22,11 @@ public class SmartMultiImageFill : MonoBehaviour
 
     private Dictionary<Image, int> imageFillOrigins = new Dictionary<Image, int>();
 
+    private void Start()
+    {
+        ResetAllFills();
+    }
+
     void Update()
     {
         Vector2 inputPosition = Vector2.zero;
@@ -128,5 +133,14 @@ public class SmartMultiImageFill : MonoBehaviour
     {
         isDragging = false;
         imageFillOrigins.Clear();
+    }
+    //Reset fill amounts of all images
+    public void ResetAllFills()
+    {
+        foreach (var target in fillTargets)
+        {
+            if (target.image != null)
+                target.image.fillAmount = 0f;
+        }
     }
 }
