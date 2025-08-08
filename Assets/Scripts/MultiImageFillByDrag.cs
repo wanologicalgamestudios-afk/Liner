@@ -23,6 +23,8 @@ public class SmartMultiImageFill : MonoBehaviour
     private Dictionary<Image, int> imageFillOrigins = new Dictionary<Image, int>();
     private int activeTargetIndex = 0;
 
+    public string currentImageName = ""; // ✅ Public string for current image name under drag
+
     void Start()
     {
         ResetAllFills();
@@ -65,6 +67,8 @@ public class SmartMultiImageFill : MonoBehaviour
         dragStartScreenPos = screenPos;
         imageFillOrigins.Clear();
 
+        UpdateCurrentImageName(screenPos);
+
         if (activeTargetIndex < fillTargets.Count && fillTargets[activeTargetIndex].image != null)
         {
             var image = fillTargets[activeTargetIndex].image;
@@ -77,6 +81,8 @@ public class SmartMultiImageFill : MonoBehaviour
 
     void UpdateFill(Vector2 screenPos)
     {
+        UpdateCurrentImageName(screenPos);
+
         while (activeTargetIndex < fillTargets.Count)
         {
             var target = fillTargets[activeTargetIndex];
@@ -110,8 +116,9 @@ public class SmartMultiImageFill : MonoBehaviour
 
             target.image.fillAmount = fill;
 
-            if (fill >= 1f)
+            if (fill >= 0.9f)
             {
+                target.image.fillAmount = 1f; // Snap to 100%
                 target.isFilled = true;
                 activeTargetIndex++;
 
@@ -127,6 +134,10 @@ public class SmartMultiImageFill : MonoBehaviour
                         next.image.fillOrigin = nextOrigin;
                         imageFillOrigins[next.image] = nextOrigin;
                     }
+                }
+                else
+                {
+                    currentImageName = ""; // ✅ Clear when done
                 }
             }
 
@@ -152,6 +163,7 @@ public class SmartMultiImageFill : MonoBehaviour
 
         activeTargetIndex = 0;
         isDragging = false;
+        currentImageName = ""; // ✅ Reset current image name
     }
 
     // Checks if pointer is on the current image
@@ -166,6 +178,24 @@ public class SmartMultiImageFill : MonoBehaviour
 
         RectTransform rt = target.image.rectTransform;
         return RectTransformUtility.RectangleContainsScreenPoint(rt, screenPos);
+    }
+
+    void UpdateCurrentImageName(Vector2 screenPos)
+    {
+        foreach (var target in fillTargets)
+        {
+            if (target.image == null)
+                continue;
+
+            RectTransform rt = target.image.rectTransform;
+            if (RectTransformUtility.RectangleContainsScreenPoint(rt, screenPos))
+            {
+                currentImageName = target.image.gameObject.name;
+                return;
+            }
+        }
+
+        currentImageName = "";
     }
 
     int GetNearestOrigin(FillTarget.Axis axis, Vector2 screenPos, RectTransform rectTransform)
