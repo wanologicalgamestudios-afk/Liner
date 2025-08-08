@@ -57,22 +57,21 @@ public class SmartMultiImageFill : MonoBehaviour
 
     void BeginDrag(Vector2 screenPos)
     {
+        // Check if pointer is over the active image
+        if (!IsPointerOverTargetImage(screenPos))
+            return;
+
         isDragging = true;
         dragStartScreenPos = screenPos;
         imageFillOrigins.Clear();
-        activeTargetIndex = 0;
 
-        // Set initial fill origin for index 0
-        if (fillTargets.Count > 0 && fillTargets[0].image != null)
+        if (activeTargetIndex < fillTargets.Count && fillTargets[activeTargetIndex].image != null)
         {
-            var image = fillTargets[0].image;
+            var image = fillTargets[activeTargetIndex].image;
             RectTransform rt = image.rectTransform;
-            Vector3[] worldCorners = new Vector3[4];
-            rt.GetWorldCorners(worldCorners);
-
-            int origin = GetNearestOrigin(fillTargets[0].fillAxis, screenPos, rt);
-            imageFillOrigins[image] = origin;
+            int origin = GetNearestOrigin(fillTargets[activeTargetIndex].fillAxis, screenPos, rt);
             image.fillOrigin = origin;
+            imageFillOrigins[image] = origin;
         }
     }
 
@@ -150,9 +149,25 @@ public class SmartMultiImageFill : MonoBehaviour
                 target.isFilled = false;
             }
         }
+
+        activeTargetIndex = 0;
+        isDragging = false;
     }
 
-    // Rotation-safe: Get origin based on screen touch relative to local center
+    // Checks if pointer is on the current image
+    bool IsPointerOverTargetImage(Vector2 screenPos)
+    {
+        if (activeTargetIndex >= fillTargets.Count)
+            return false;
+
+        var target = fillTargets[activeTargetIndex];
+        if (target.image == null)
+            return false;
+
+        RectTransform rt = target.image.rectTransform;
+        return RectTransformUtility.RectangleContainsScreenPoint(rt, screenPos);
+    }
+
     int GetNearestOrigin(FillTarget.Axis axis, Vector2 screenPos, RectTransform rectTransform)
     {
         RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, screenPos, null, out Vector2 localPoint);
@@ -172,7 +187,6 @@ public class SmartMultiImageFill : MonoBehaviour
         }
     }
 
-    // ✅ Rotation-safe: Fill from side nearest to previous image center
     int GetNearestOrigin(FillTarget.Axis axis, RectTransform lastFilled, RectTransform nextToFill)
     {
         Vector3 fromCenter = lastFilled.TransformPoint(lastFilled.rect.center);
@@ -183,11 +197,11 @@ public class SmartMultiImageFill : MonoBehaviour
 
         if (axis == FillTarget.Axis.Horizontal)
         {
-            return localDir.x >= 0 ? 0 : 1; // 0 = left, 1 = right
+            return localDir.x >= 0 ? 0 : 1;
         }
         else
         {
-            return localDir.y >= 0 ? 0 : 1; // 0 = bottom, 1 = top
+            return localDir.y >= 0 ? 0 : 1;
         }
     }
 }
