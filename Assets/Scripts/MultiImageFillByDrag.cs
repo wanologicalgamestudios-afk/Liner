@@ -21,7 +21,6 @@ public class SmartMultiImageFill : MonoBehaviour
     private Vector2 dragStartScreenPos;
     private bool isDragging = false;
     private Dictionary<Image, int> imageFillOrigins = new Dictionary<Image, int>();
-    private int activeTargetIndex = 0;
 
     public string currentImageName = ""; // ✅ Public string for current image name under drag
 
@@ -59,43 +58,29 @@ public class SmartMultiImageFill : MonoBehaviour
 
     void BeginDrag(Vector2 screenPos)
     {
-        // Check if pointer is over the active image
-        if (!IsPointerOverTargetImage(screenPos))
-            return;
-
         isDragging = true;
         dragStartScreenPos = screenPos;
         imageFillOrigins.Clear();
 
         UpdateCurrentImageName(screenPos);
-
-        if (activeTargetIndex < fillTargets.Count && fillTargets[activeTargetIndex].image != null)
-        {
-            var image = fillTargets[activeTargetIndex].image;
-            RectTransform rt = image.rectTransform;
-            int origin = GetNearestOrigin(fillTargets[activeTargetIndex].fillAxis, screenPos, rt);
-            image.fillOrigin = origin;
-            imageFillOrigins[image] = origin;
-        }
     }
 
     void UpdateFill(Vector2 screenPos)
     {
         UpdateCurrentImageName(screenPos);
 
-        while (activeTargetIndex < fillTargets.Count)
+        foreach (var target in fillTargets)
         {
-            var target = fillTargets[activeTargetIndex];
-            if (target.isFilled || target.image == null)
-            {
-                activeTargetIndex++;
+            if (target.image == null || target.isFilled)
                 continue;
-            }
-
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                target.image.rectTransform, screenPos, null, out Vector2 localPos);
 
             RectTransform rt = target.image.rectTransform;
+            if (!RectTransformUtility.RectangleContainsScreenPoint(rt, screenPos))
+                continue;
+
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                rt, screenPos, null, out Vector2 localPos);
+
             Vector2 size = rt.rect.size;
             float fill = 0f;
 
@@ -110,38 +95,21 @@ public class SmartMultiImageFill : MonoBehaviour
                 fill = Mathf.Clamp01(y / size.y);
             }
 
-            int origin = imageFillOrigins.ContainsKey(target.image) ? imageFillOrigins[target.image] : 0;
+            int origin = imageFillOrigins.ContainsKey(target.image) ? imageFillOrigins[target.image] : GetNearestOrigin(target.fillAxis, screenPos, rt);
+            imageFillOrigins[target.image] = origin;
             if (origin == 1)
                 fill = 1f - fill;
 
+            target.image.fillOrigin = origin;
             target.image.fillAmount = fill;
 
             if (fill >= 0.9f)
             {
                 target.image.fillAmount = 1f; // Snap to 100%
                 target.isFilled = true;
-                activeTargetIndex++;
-
-                if (activeTargetIndex < fillTargets.Count)
-                {
-                    var next = fillTargets[activeTargetIndex];
-                    if (next.image != null)
-                    {
-                        RectTransform prevRT = target.image.rectTransform;
-                        RectTransform nextRT = next.image.rectTransform;
-
-                        int nextOrigin = GetNearestOrigin(next.fillAxis, prevRT, nextRT);
-                        next.image.fillOrigin = nextOrigin;
-                        imageFillOrigins[next.image] = nextOrigin;
-                    }
-                }
-                else
-                {
-                    currentImageName = ""; // ✅ Clear when done
-                }
             }
 
-            break;
+            break; // Only fill one image at a time
         }
     }
 
@@ -161,23 +129,8 @@ public class SmartMultiImageFill : MonoBehaviour
             }
         }
 
-        activeTargetIndex = 0;
         isDragging = false;
         currentImageName = ""; // ✅ Reset current image name
-    }
-
-    // Checks if pointer is on the current image
-    bool IsPointerOverTargetImage(Vector2 screenPos)
-    {
-        if (activeTargetIndex >= fillTargets.Count)
-            return false;
-
-        var target = fillTargets[activeTargetIndex];
-        if (target.image == null)
-            return false;
-
-        RectTransform rt = target.image.rectTransform;
-        return RectTransformUtility.RectangleContainsScreenPoint(rt, screenPos);
     }
 
     void UpdateCurrentImageName(Vector2 screenPos)
@@ -214,24 +167,6 @@ public class SmartMultiImageFill : MonoBehaviour
             float distToBottom = Mathf.Abs(localPoint.y + size.y * 0.5f);
             float distToTop = Mathf.Abs(localPoint.y - size.y * 0.5f);
             return distToBottom < distToTop ? 0 : 1;
-        }
-    }
-
-    int GetNearestOrigin(FillTarget.Axis axis, RectTransform lastFilled, RectTransform nextToFill)
-    {
-        Vector3 fromCenter = lastFilled.TransformPoint(lastFilled.rect.center);
-        Vector3 toCenter = nextToFill.TransformPoint(nextToFill.rect.center);
-        Vector3 worldDir = toCenter - fromCenter;
-
-        Vector2 localDir = nextToFill.InverseTransformDirection(worldDir);
-
-        if (axis == FillTarget.Axis.Horizontal)
-        {
-            return localDir.x >= 0 ? 0 : 1;
-        }
-        else
-        {
-            return localDir.y >= 0 ? 0 : 1;
         }
     }
 }
