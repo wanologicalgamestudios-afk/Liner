@@ -70,7 +70,7 @@ public class SmartMultiImageFill : MonoBehaviour
             Vector3[] worldCorners = new Vector3[4];
             rt.GetWorldCorners(worldCorners);
 
-            int origin = GetNearestOrigin(fillTargets[0].fillAxis, screenPos, worldCorners);
+            int origin = GetNearestOrigin(fillTargets[0].fillAxis, screenPos, rt);
             imageFillOrigins[image] = origin;
             image.fillOrigin = origin;
         }
@@ -124,12 +124,7 @@ public class SmartMultiImageFill : MonoBehaviour
                         RectTransform prevRT = target.image.rectTransform;
                         RectTransform nextRT = next.image.rectTransform;
 
-                        Vector3[] prevCorners = new Vector3[4];
-                        Vector3[] nextCorners = new Vector3[4];
-                        prevRT.GetWorldCorners(prevCorners);
-                        nextRT.GetWorldCorners(nextCorners);
-
-                        int nextOrigin = GetNearestOrigin(next.fillAxis, prevCorners, nextCorners);
+                        int nextOrigin = GetNearestOrigin(next.fillAxis, prevRT, nextRT);
                         next.image.fillOrigin = nextOrigin;
                         imageFillOrigins[next.image] = nextOrigin;
                     }
@@ -157,35 +152,42 @@ public class SmartMultiImageFill : MonoBehaviour
         }
     }
 
-    int GetNearestOrigin(FillTarget.Axis axis, Vector2 screenPos, Vector3[] corners)
+    // Rotation-safe: Get origin based on screen touch relative to local center
+    int GetNearestOrigin(FillTarget.Axis axis, Vector2 screenPos, RectTransform rectTransform)
     {
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, screenPos, null, out Vector2 localPoint);
+        Vector2 size = rectTransform.rect.size;
+
         if (axis == FillTarget.Axis.Horizontal)
         {
-            float distToLeft = Mathf.Abs(screenPos.x - corners[0].x);
-            float distToRight = Mathf.Abs(screenPos.x - corners[3].x);
+            float distToLeft = Mathf.Abs(localPoint.x + size.x * 0.5f);
+            float distToRight = Mathf.Abs(localPoint.x - size.x * 0.5f);
             return distToLeft < distToRight ? 0 : 1;
         }
         else
         {
-            float distToBottom = Mathf.Abs(screenPos.y - corners[0].y);
-            float distToTop = Mathf.Abs(screenPos.y - corners[1].y);
+            float distToBottom = Mathf.Abs(localPoint.y + size.y * 0.5f);
+            float distToTop = Mathf.Abs(localPoint.y - size.y * 0.5f);
             return distToBottom < distToTop ? 0 : 1;
         }
     }
 
-    int GetNearestOrigin(FillTarget.Axis axis, Vector3[] from, Vector3[] to)
+    // ✅ Rotation-safe: Fill from side nearest to previous image center
+    int GetNearestOrigin(FillTarget.Axis axis, RectTransform lastFilled, RectTransform nextToFill)
     {
+        Vector3 fromCenter = lastFilled.TransformPoint(lastFilled.rect.center);
+        Vector3 toCenter = nextToFill.TransformPoint(nextToFill.rect.center);
+        Vector3 worldDir = toCenter - fromCenter;
+
+        Vector2 localDir = nextToFill.InverseTransformDirection(worldDir);
+
         if (axis == FillTarget.Axis.Horizontal)
         {
-            float distToLeft = Mathf.Abs(from[3].x - to[0].x);
-            float distToRight = Mathf.Abs(from[0].x - to[3].x);
-            return distToLeft < distToRight ? 0 : 1;
+            return localDir.x >= 0 ? 0 : 1; // 0 = left, 1 = right
         }
         else
         {
-            float distToBottom = Mathf.Abs(from[1].y - to[0].y);
-            float distToTop = Mathf.Abs(from[0].y - to[1].y);
-            return distToBottom < distToTop ? 0 : 1;
+            return localDir.y >= 0 ? 0 : 1; // 0 = bottom, 1 = top
         }
     }
 }
