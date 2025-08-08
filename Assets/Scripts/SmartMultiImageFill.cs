@@ -22,7 +22,7 @@ public class SmartMultiImageFill : MonoBehaviour
     private bool isDragging = false;
     private Dictionary<Image, int> imageFillOrigins = new Dictionary<Image, int>();
 
-    public string currentImageName = ""; // ✅ Public string for current image name under drag
+    public string currentImageName = ""; // Public string for current image name under drag
 
     void Start()
     {
@@ -145,7 +145,7 @@ public class SmartMultiImageFill : MonoBehaviour
         }
 
         isDragging = false;
-        currentImageName = ""; // ✅ Reset current image name
+        currentImageName = ""; // Reset current image name
     }
 
     void UpdateCurrentImageName(Vector2 screenPos)
@@ -187,12 +187,12 @@ public class SmartMultiImageFill : MonoBehaviour
 
     void OnPuzzleComplete()
     {
-        Debug.Log("✅ Puzzle Completed!");
+        Debug.Log("Puzzle Completed!");
     }
 
     void OnFailed()
     {
-        Debug.Log("❌ Puzzle Failed. Resetting...");
+        Debug.Log("Puzzle Failed. Resetting...");
         ResetAllFills();
     }
 }
