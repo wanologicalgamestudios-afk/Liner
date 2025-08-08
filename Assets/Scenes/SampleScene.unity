@@ -650,9 +650,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 136955749}
-        m_TargetAssemblyTypeName: LineDraw, Assembly-CSharp
-        m_MethodName: ClearAllLines
+      - m_Target: {fileID: 1980948769}
+        m_TargetAssemblyTypeName: SmartMultiImageFill, Assembly-CSharp
+        m_MethodName: ResetAllFills
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1346,7 +1346,6 @@ GameObject:
   - component: {fileID: 1980948768}
   - component: {fileID: 1980948767}
   - component: {fileID: 1980948769}
-  - component: {fileID: 1980948770}
   m_Layer: 5
   m_Name: BG
   m_TagString: Untagged
@@ -1422,42 +1421,25 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1980948765}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c52a36140ab5c1440a292b37f8408c04, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fillImage: {fileID: 531565388}
-  fillAxis: 0
---- !u!114 &1980948770
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1980948765}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 08d79d74d28514146bbcb55581b433ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   fillTargets:
-  - name: 1
-    image: {fileID: 531565388}
+  - image: {fileID: 531565388}
     fillAxis: 0
     isFilled: 0
-  - name: 2
-    image: {fileID: 149388725}
+  - image: {fileID: 149388725}
     fillAxis: 0
     isFilled: 0
-  - name: 3
-    image: {fileID: 1011612182}
+  - image: {fileID: 1011612182}
     fillAxis: 0
     isFilled: 0
-  - name: 4
-    image: {fileID: 688263223}
+  - image: {fileID: 688263223}
     fillAxis: 0
     isFilled: 0
+  currentImageName: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -8,7 +8,7 @@ public class SmartMultiImageFill : MonoBehaviour
     [System.Serializable]
     public class FillTarget
     {
-        public string name;
+       // public string name;
         public Image image;
         public enum Axis { Horizontal, Vertical }
         public Axis fillAxis = Axis.Horizontal;
@@ -116,6 +116,21 @@ public class SmartMultiImageFill : MonoBehaviour
     void EndDrag()
     {
         isDragging = false;
+
+        bool allFilled = true;
+        foreach (var target in fillTargets)
+        {
+            if (!target.isFilled)
+            {
+                allFilled = false;
+                break;
+            }
+        }
+
+        if (allFilled)
+            OnPuzzleComplete();
+        else
+            OnFailed();
     }
 
     public void ResetAllFills()
@@ -168,5 +183,16 @@ public class SmartMultiImageFill : MonoBehaviour
             float distToTop = Mathf.Abs(localPoint.y - size.y * 0.5f);
             return distToBottom < distToTop ? 0 : 1;
         }
+    }
+
+    void OnPuzzleComplete()
+    {
+        Debug.Log("✅ Puzzle Completed!");
+    }
+
+    void OnFailed()
+    {
+        Debug.Log("❌ Puzzle Failed. Resetting...");
+        ResetAllFills();
     }
 }
