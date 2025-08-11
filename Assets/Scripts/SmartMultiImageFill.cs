@@ -8,7 +8,6 @@ public class SmartMultiImageFill : MonoBehaviour
     [System.Serializable]
     public class FillTarget
     {
-       // public string name;
         public Image image;
         public enum Axis { Horizontal, Vertical }
         public Axis fillAxis = Axis.Horizontal;
@@ -69,8 +68,9 @@ public class SmartMultiImageFill : MonoBehaviour
     {
         UpdateCurrentImageName(screenPos);
 
-        foreach (var target in fillTargets)
+        for (int i = 0; i < fillTargets.Count; i++)
         {
+            var target = fillTargets[i];
             if (target.image == null || target.isFilled)
                 continue;
 
@@ -78,8 +78,7 @@ public class SmartMultiImageFill : MonoBehaviour
             if (!RectTransformUtility.RectangleContainsScreenPoint(rt, screenPos))
                 continue;
 
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                rt, screenPos, null, out Vector2 localPos);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(rt, screenPos, null, out Vector2 localPos);
 
             Vector2 size = rt.rect.size;
             float fill = 0f;
@@ -95,18 +94,51 @@ public class SmartMultiImageFill : MonoBehaviour
                 fill = Mathf.Clamp01(y / size.y);
             }
 
-            int origin = imageFillOrigins.ContainsKey(target.image) ? imageFillOrigins[target.image] : GetNearestOrigin(target.fillAxis, screenPos, rt);
+            int origin = imageFillOrigins.ContainsKey(target.image)
+                ? imageFillOrigins[target.image]
+                : GetNearestOrigin(target.fillAxis, screenPos, rt);
+
             imageFillOrigins[target.image] = origin;
+
             if (origin == 1)
                 fill = 1f - fill;
 
             target.image.fillOrigin = origin;
             target.image.fillAmount = fill;
 
-            if (fill >= 0.98f)
+            // ✅ Mark complete at 90% IF drag is over next unfilled image
+            if (fill >= 0.90f)
             {
-                target.image.fillAmount = 1f; // Snap to 100%
-                target.isFilled = true;
+                bool canComplete = false;
+
+                int nextIndex = i + 1;
+                if (nextIndex < fillTargets.Count)
+                {
+                    var nextTarget = fillTargets[nextIndex];
+                    if (nextTarget.image != null && !nextTarget.isFilled)
+                    {
+                        if (RectTransformUtility.RectangleContainsScreenPoint(nextTarget.image.rectTransform, screenPos))
+                        {
+                            canComplete = true;
+                        }
+                    }
+                    else
+                    {
+                        // If no next target or it's already filled
+                        canComplete = true;
+                    }
+                }
+                else
+                {
+                    // Last image in list
+                    canComplete = true;
+                }
+
+                if (canComplete)
+                {
+                    target.image.fillAmount = 1f; // Snap to full
+                    target.isFilled = true;
+                }
             }
 
             break; // Only fill one image at a time
@@ -145,7 +177,7 @@ public class SmartMultiImageFill : MonoBehaviour
         }
 
         isDragging = false;
-        currentImageName = ""; // Reset current image name
+        currentImageName = "";
     }
 
     void UpdateCurrentImageName(Vector2 screenPos)
