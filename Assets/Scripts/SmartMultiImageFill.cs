@@ -103,7 +103,7 @@ public class SmartMultiImageFill : MonoBehaviour
             target.image.fillOrigin = origin;
             target.image.fillAmount = fill;
 
-            if (fill >= 0.9f)
+            if (fill >= 0.98f)
             {
                 target.image.fillAmount = 1f; // Snap to 100%
                 target.isFilled = true;
