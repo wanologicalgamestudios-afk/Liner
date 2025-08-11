@@ -603,17 +603,45 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1447016343}
     m_Modifications:
+    - target: {fileID: 1509552725504115288, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2086332218275726655, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2323118235725362343, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2718061545995855141, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2901708600165402326, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4424250187612487113, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
       propertyPath: m_Name
       value: CrossFade
       objectReference: {fileID: 0}
     - target: {fileID: 4424250187612487113, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4629998607020654085, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6321146959086843979, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
+      propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6973817328283420501, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7086059414388089668, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
       propertyPath: m_Pivot.x
@@ -695,13 +723,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7659388412296829067, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8303674815207411643, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8782661962225626256, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9128937758170710320, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 2444179404200580771, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4629998607020654085, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 4424250187612487113, guid: 377f35cfe3b5af643990e6c44773ca75, type: 3}
@@ -882,11 +923,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2775796388722418490, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
       propertyPath: m_SizeDelta.x
-      value: -918.23376
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2775796388722418490, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -1936.4675
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2775796388722418490, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -962,7 +1003,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7198672017056482032, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8965605686320588529, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
       propertyPath: m_fontAsset
