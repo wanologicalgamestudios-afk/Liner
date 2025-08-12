@@ -81,6 +81,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
     public void OnPointerUp(PointerEventData eventData)
     {
         isDragging = false;
+        CheckPuzzleStatus();
     }
 
     private void DetectFillDirection(PointerEventData eventData)
@@ -133,6 +134,53 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
             fillImages[currentIndex].fillAmount = amount;
             canSelectNextToFillUp = (fillImages[currentIndex].fillAmount >= 0.9f);
+            if (canSelectNextToFillUp) 
+            {
+                fillImages[currentIndex].fillAmount = 1;
+            }
         }
+    }
+
+    private void CheckPuzzleStatus() 
+    {
+        bool isPuzzleSolved = false;
+
+        foreach (Image image in fillImages) 
+        {
+            if (image.fillAmount < 1)
+            {
+                Debug.Log("fail" + image.transform.name + " amount = "+ image.fillAmount);
+              
+                isPuzzleSolved = false;
+                break;
+            }
+            else 
+            {
+                isPuzzleSolved = true ;
+            }
+        }
+
+        if (!isPuzzleSolved) 
+        {
+            PuzzleFail();
+        }
+        else 
+        {
+            PuzzpleSuccess();
+        }
+    }
+
+    private void PuzzleFail() 
+    {
+        foreach (Image image in fillImages) 
+        {
+            image.fillAmount = 0;
+        }
+
+        Debug.Log("puzzle fail");
+    }
+    private void PuzzpleSuccess() 
+    {
+        Debug.Log("Puzzle solved");
     }
 }
