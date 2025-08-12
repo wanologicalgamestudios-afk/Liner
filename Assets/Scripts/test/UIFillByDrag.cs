@@ -15,6 +15,9 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
     // New variable to control image switching
     private bool canSelectNextImageToFill = false;
 
+    // Track locked images (already filled 100%)
+    private HashSet<Image> lockedImages = new HashSet<Image>();
+
     void Start()
     {
         if (fillImages.Count == 0)
@@ -40,7 +43,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
     public void OnPointerDown(PointerEventData eventData)
     {
         Image hitImage = GetImageUnderPointer(eventData);
-        if (hitImage != null)
+        if (hitImage != null && !lockedImages.Contains(hitImage))
         {
             currentImage = hitImage;
             currentRectTransform = currentImage.GetComponent<RectTransform>();
@@ -56,7 +59,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
         Image hitImage = GetImageUnderPointer(eventData);
 
-        if (hitImage != null && hitImage != currentImage)
+        if (hitImage != null && hitImage != currentImage && !lockedImages.Contains(hitImage))
         {
             // Only allow switching if the flag is true
             if (canSelectNextImageToFill)
@@ -113,7 +116,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
     private void UpdateFill(PointerEventData eventData)
     {
-        if (currentImage == null) return;
+        if (currentImage == null || lockedImages.Contains(currentImage)) return;
 
         Vector2 localPoint;
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -141,9 +144,18 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
             // Update the flag for switching
             canSelectNextImageToFill = currentImage.fillAmount >= 0.9f;
+
             if (canSelectNextImageToFill) 
             {
                 currentImage.fillAmount = 1.0f;
+                canSelectNextImageToFill = true;
+            }
+
+            if (currentImage.fillAmount >= 1.0f)
+            {
+                currentImage.fillAmount = 1.0f;
+                lockedImages.Add(currentImage); // lock it so it can't unfill
+                canSelectNextImageToFill = true;
             }
         }
     }
@@ -164,6 +176,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
     private void PuzzleFail()
     {
         Debug.Log("Puzzle failed — resetting images.");
+        lockedImages.Clear();
         foreach (Image image in fillImages)
         {
             image.fillAmount = 0;
