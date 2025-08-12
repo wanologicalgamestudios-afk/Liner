@@ -57,6 +57,14 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
         Image hitImage = GetImageUnderPointer(eventData);
 
+        if (hitImage != null)
+        {
+            if (hitImage.fillAmount >= 1) 
+            {
+                hitImage = null;
+            }
+        }
+
         // if (hitImage != null && hitImage != currentImage && !lockedImages.Contains(hitImage))
         if (hitImage != null && hitImage != currentImage)
         {
@@ -154,7 +162,6 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
             if (currentImage.fillAmount >= 1.0f)
             {
-                currentImage.type = Image.Type.Simple;
                 currentImage.fillAmount = 1.0f;
                 canSelectNextImageToFill = true;
             }
@@ -179,8 +186,6 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         Debug.Log("Puzzle failed — resetting images.");
         foreach (Image image in fillImages)
         {
-            image.type = Image.Type.Filled;
-            image.fillMethod = Image.FillMethod.Horizontal;
             image.fillAmount = 0;
         }
     }
