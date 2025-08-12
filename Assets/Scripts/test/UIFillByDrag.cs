@@ -12,6 +12,9 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
     private bool isDragging = false;
     private bool fillFromLeft = true;
 
+    // New variable to control image switching
+    private bool canSelectNextImageToFill = false;
+
     void Start()
     {
         if (fillImages.Count == 0)
@@ -55,10 +58,14 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
         if (hitImage != null && hitImage != currentImage)
         {
-            // Switch to the new image if dragging over it
-            currentImage = hitImage;
-            currentRectTransform = currentImage.GetComponent<RectTransform>();
-            DetectFillDirection(eventData);
+            // Only allow switching if the flag is true
+            if (canSelectNextImageToFill)
+            {
+                currentImage = hitImage;
+                currentRectTransform = currentImage.GetComponent<RectTransform>();
+                DetectFillDirection(eventData);
+                canSelectNextImageToFill = false; // reset for the new image
+            }
         }
 
         UpdateFill(eventData);
@@ -131,6 +138,13 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
             }
 
             currentImage.fillAmount = Mathf.Clamp01(amount);
+
+            // Update the flag for switching
+            canSelectNextImageToFill = currentImage.fillAmount >= 0.9f;
+            if (canSelectNextImageToFill) 
+            {
+                currentImage.fillAmount = 1.0f;
+            }
         }
     }
 
