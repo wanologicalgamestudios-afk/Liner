@@ -6,73 +6,59 @@ using System.Collections.Generic;
 public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
     public List<Image> fillImages = new List<Image>();
-    public bool canSelectNextToFillUp = false;
 
-    private int currentIndex = 0;
+    private Image currentImage;
     private RectTransform currentRectTransform;
     private bool isDragging = false;
     private bool fillFromLeft = true;
 
     void Start()
     {
-        // Automatically get all child images
-        fillImages.Clear();
-        foreach (Transform child in transform)
+        if (fillImages.Count == 0)
         {
-            Image img = child.GetComponent<Image>();
-            if (img != null)
+            foreach (Transform child in transform)
             {
-                img.fillAmount = 0f; // Reset
-                fillImages.Add(img);
+                Image img = child.GetComponent<Image>();
+                if (img != null)
+                {
+                    img.fillAmount = 0f;
+                    fillImages.Add(img);
+                }
             }
         }
 
         if (fillImages.Count == 0)
         {
-            Debug.LogError("No child Image components found.");
+            Debug.LogError("No Image components found.");
             enabled = false;
-            return;
         }
-
-        currentIndex = 0;
-        SetupCurrentImage();
-    }
-
-    private void SetupCurrentImage()
-    {
-        currentRectTransform = fillImages[currentIndex].GetComponent<RectTransform>();
-        canSelectNextToFillUp = false;
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (currentIndex >= fillImages.Count)
-            return;
-
-        isDragging = true;
-        DetectFillDirection(eventData);
-        UpdateFill(eventData);
+        Image hitImage = GetImageUnderPointer(eventData);
+        if (hitImage != null)
+        {
+            currentImage = hitImage;
+            currentRectTransform = currentImage.GetComponent<RectTransform>();
+            isDragging = true;
+            DetectFillDirection(eventData);
+            UpdateFill(eventData);
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (!isDragging)
-            return;
+        if (!isDragging) return;
 
-        // Detect if pointer moved into next image
-        if (currentIndex < fillImages.Count)
+        Image hitImage = GetImageUnderPointer(eventData);
+
+        if (hitImage != null && hitImage != currentImage)
         {
-            RectTransform rt = fillImages[currentIndex].rectTransform;
-            if (!RectTransformUtility.RectangleContainsScreenPoint(rt, eventData.position, eventData.pressEventCamera))
-            {
-                // If pointer leaves current image and it's filled enough
-                if (canSelectNextToFillUp && currentIndex < fillImages.Count - 1)
-                {
-                    currentIndex++;
-                    SetupCurrentImage();
-                    DetectFillDirection(eventData);
-                }
-            }
+            // Switch to the new image if dragging over it
+            currentImage = hitImage;
+            currentRectTransform = currentImage.GetComponent<RectTransform>();
+            DetectFillDirection(eventData);
         }
 
         UpdateFill(eventData);
@@ -84,103 +70,94 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         CheckPuzzleStatus();
     }
 
+    private Image GetImageUnderPointer(PointerEventData eventData)
+    {
+        foreach (Image img in fillImages)
+        {
+            if (RectTransformUtility.RectangleContainsScreenPoint(img.rectTransform, eventData.position, eventData.pressEventCamera))
+            {
+                return img;
+            }
+        }
+        return null;
+    }
+
     private void DetectFillDirection(PointerEventData eventData)
     {
         Vector2 localPoint;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            fillImages[currentIndex].rectTransform,
+            currentImage.rectTransform,
             eventData.position,
             eventData.pressEventCamera,
             out localPoint
         );
 
-        if (fillImages[currentIndex].fillMethod == Image.FillMethod.Horizontal)
+        if (currentImage.fillMethod == Image.FillMethod.Horizontal)
         {
             fillFromLeft = (localPoint.x < 0);
-            fillImages[currentIndex].fillOrigin = fillFromLeft ? (int)Image.OriginHorizontal.Left : (int)Image.OriginHorizontal.Right;
+            currentImage.fillOrigin = fillFromLeft ? (int)Image.OriginHorizontal.Left : (int)Image.OriginHorizontal.Right;
         }
-        else if (fillImages[currentIndex].fillMethod == Image.FillMethod.Vertical)
+        else if (currentImage.fillMethod == Image.FillMethod.Vertical)
         {
             bool fillFromBottom = (localPoint.y < 0);
-            fillImages[currentIndex].fillOrigin = fillFromBottom ? (int)Image.OriginVertical.Bottom : (int)Image.OriginVertical.Top;
+            currentImage.fillOrigin = fillFromBottom ? (int)Image.OriginVertical.Bottom : (int)Image.OriginVertical.Top;
         }
     }
 
     private void UpdateFill(PointerEventData eventData)
     {
-        if (currentIndex >= fillImages.Count) return;
+        if (currentImage == null) return;
 
         Vector2 localPoint;
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            fillImages[currentIndex].rectTransform,
+            currentImage.rectTransform,
             eventData.position,
             eventData.pressEventCamera,
             out localPoint))
         {
             float amount = 0f;
 
-            if (fillImages[currentIndex].fillMethod == Image.FillMethod.Horizontal)
+            if (currentImage.fillMethod == Image.FillMethod.Horizontal)
             {
                 float width = currentRectTransform.rect.width;
                 float normalizedX = Mathf.Clamp01((localPoint.x + width * 0.5f) / width);
                 amount = fillFromLeft ? normalizedX : 1f - normalizedX;
             }
-            else if (fillImages[currentIndex].fillMethod == Image.FillMethod.Vertical)
+            else if (currentImage.fillMethod == Image.FillMethod.Vertical)
             {
                 float height = currentRectTransform.rect.height;
                 float normalizedY = Mathf.Clamp01((localPoint.y + height * 0.5f) / height);
-                amount = fillImages[currentIndex].fillOrigin == (int)Image.OriginVertical.Bottom ? normalizedY : 1f - normalizedY;
+                amount = currentImage.fillOrigin == (int)Image.OriginVertical.Bottom ? normalizedY : 1f - normalizedY;
             }
 
-            fillImages[currentIndex].fillAmount = amount;
-            canSelectNextToFillUp = (fillImages[currentIndex].fillAmount >= 0.9f);
-            if (canSelectNextToFillUp)
-            {
-                fillImages[currentIndex].fillAmount = 1;
-            }
+            currentImage.fillAmount = Mathf.Clamp01(amount);
         }
     }
 
     private void CheckPuzzleStatus()
     {
-        bool isPuzzleSolved = false;
-
         foreach (Image image in fillImages)
         {
-            if (image.fillAmount < 1)
+            if (image.fillAmount < 1f)
             {
-                Debug.Log("fail" + image.transform.name + " amount = " + image.fillAmount);
-
-                isPuzzleSolved = false;
-                break;
-            }
-            else
-            {
-                isPuzzleSolved = true;
+                PuzzleFail();
+                return;
             }
         }
-
-        if (!isPuzzleSolved)
-        {
-            PuzzleFail();
-        }
-        else
-        {
-            PuzzpleSuccess();
-        }
+        PuzzleSuccess();
     }
 
     private void PuzzleFail()
     {
+        Debug.Log("Puzzle failed — resetting images.");
         foreach (Image image in fillImages)
         {
             image.fillAmount = 0;
         }
-        currentIndex = 0;
-        Debug.Log("puzzle fail");
     }
-    private void PuzzpleSuccess()
+
+    private void PuzzleSuccess()
     {
-        Debug.Log("Puzzle solved");
+        Debug.Log("Puzzle solved!");
     }
 }
