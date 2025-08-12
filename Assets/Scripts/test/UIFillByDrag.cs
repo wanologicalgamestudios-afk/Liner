@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 
 public class UIFillByDrag : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
-    public Image fillImage; // Assign your UI Image here with Fill Method set to Horizontal
+    public Image fillImage; // Will be assigned automatically from child if null
     public int currentFillingAmount = 0; // Fill percentage from 1 to 100
     public bool canSelectNextToFillUp = false; // True if fill amount > 90
 
@@ -16,9 +16,23 @@ public class UIFillByDrag : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     {
         if (fillImage == null)
         {
-            Debug.LogError("Fill Image is not assigned.");
-            enabled = false;
-            return;
+            // Look for Image components only in direct children
+            foreach (Transform child in transform)
+            {
+                Image childImage = child.GetComponent<Image>();
+                if (childImage != null)
+                {
+                    fillImage = childImage;
+                    break;
+                }
+            }
+
+            if (fillImage == null)
+            {
+                Debug.LogError("No Image component found in any child.");
+                enabled = false;
+                return;
+            }
         }
 
         rectTransform = fillImage.GetComponent<RectTransform>();
