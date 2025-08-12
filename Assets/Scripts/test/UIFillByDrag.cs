@@ -134,52 +134,52 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
             fillImages[currentIndex].fillAmount = amount;
             canSelectNextToFillUp = (fillImages[currentIndex].fillAmount >= 0.9f);
-            if (canSelectNextToFillUp) 
+            if (canSelectNextToFillUp)
             {
                 fillImages[currentIndex].fillAmount = 1;
             }
         }
     }
 
-    private void CheckPuzzleStatus() 
+    private void CheckPuzzleStatus()
     {
         bool isPuzzleSolved = false;
 
-        foreach (Image image in fillImages) 
+        foreach (Image image in fillImages)
         {
             if (image.fillAmount < 1)
             {
-                Debug.Log("fail" + image.transform.name + " amount = "+ image.fillAmount);
-              
+                Debug.Log("fail" + image.transform.name + " amount = " + image.fillAmount);
+
                 isPuzzleSolved = false;
                 break;
             }
-            else 
+            else
             {
-                isPuzzleSolved = true ;
+                isPuzzleSolved = true;
             }
         }
 
-        if (!isPuzzleSolved) 
+        if (!isPuzzleSolved)
         {
             PuzzleFail();
         }
-        else 
+        else
         {
             PuzzpleSuccess();
         }
     }
 
-    private void PuzzleFail() 
+    private void PuzzleFail()
     {
-        foreach (Image image in fillImages) 
+        foreach (Image image in fillImages)
         {
             image.fillAmount = 0;
         }
-
+        currentIndex = 0;
         Debug.Log("puzzle fail");
     }
-    private void PuzzpleSuccess() 
+    private void PuzzpleSuccess()
     {
         Debug.Log("Puzzle solved");
     }
