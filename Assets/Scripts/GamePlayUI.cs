@@ -10,7 +10,7 @@ public class GamePlayUI : MonoBehaviour
     private int currentLevel;
     private GameObject currentLevelObj;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
         LoadLevel();
     }
@@ -27,6 +27,14 @@ public class GamePlayUI : MonoBehaviour
         rectTrans.offsetMin = new Vector2(0, 0);
         rectTrans.offsetMax = new Vector2(0, 0);
     }
+
+    public void LoadNextLevel() 
+    {
+        UIManager.GetInstance().GameManager.CurerntLevel = UIManager.GetInstance().GameManager.CurerntLevel + 1;
+        Destroy(currentLevelObj);
+        LoadLevel();
+    }
+
 
 
 }

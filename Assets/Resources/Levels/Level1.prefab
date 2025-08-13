@@ -206,7 +206,6 @@ GameObject:
   - component: {fileID: 7885874483309108953}
   - component: {fileID: 824407191567516820}
   - component: {fileID: 7223638390475033759}
-  - component: {fileID: 8561559543657603873}
   - component: {fileID: 6584760630289579215}
   m_Layer: 5
   m_Name: Hollow
@@ -278,38 +277,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8561559543657603873
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4867853681912907007}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08d79d74d28514146bbcb55581b433ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fillTargets:
-  - image: {fileID: 1724798809730801070}
-    fillAxis: 0
-    isFilled: 0
-  - image: {fileID: 3841170839281581968}
-    fillAxis: 0
-    isFilled: 0
-  - image: {fileID: 9184105742193026477}
-    fillAxis: 0
-    isFilled: 0
-  - image: {fileID: 1493533031163227548}
-    fillAxis: 0
-    isFilled: 0
-  - image: {fileID: 1131205221050867709}
-    fillAxis: 0
-    isFilled: 0
-  - image: {fileID: 1687656362979254018}
-    fillAxis: 0
-    isFilled: 0
-  currentImageName: 
 --- !u!114 &6584760630289579215
 MonoBehaviour:
   m_ObjectHideFlags: 0

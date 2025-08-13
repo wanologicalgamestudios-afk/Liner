@@ -5,7 +5,8 @@ using System.Collections.Generic;
 
 public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
-    public List<Image> fillImages = new List<Image>();
+    [SerializeField]
+    private List<Image> fillImages = new List<Image>();
 
     private Image currentImage;
     private RectTransform currentRectTransform;
@@ -193,5 +194,6 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
     private void PuzzleSuccess()
     {
         Debug.Log("Puzzle solved!");
+        UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>().LoadNextLevel();
     }
 }
