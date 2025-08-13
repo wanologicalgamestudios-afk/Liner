@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class GamePlayUI : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class GamePlayUI : MonoBehaviour
     private string allLevelPathInResourcesFolder = "Levels/";
     [SerializeField]
     private Slider levelCompletionBar;
+    [SerializeField]
+    private TextMeshProUGUI levelName;
 
     private int currentLevel;
     private GameObject currentLevelObj;
@@ -31,7 +34,13 @@ public class GamePlayUI : MonoBehaviour
         rectTrans.offsetMax = new Vector2(0, 0);
 
         SetLevelCompletionBar(0);
+        SetLevelName();
     }
+
+    private void SetLevelName() 
+    {
+        levelName.text = "Level " + currentLevel;
+    } 
 
     public void LoadNextLevel() 
     {
