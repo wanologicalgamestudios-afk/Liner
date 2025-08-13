@@ -178,7 +178,7 @@ public class UIManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            SoundManager.Click();
+           // SoundManager.Click();
             BackButtonIsPressed();
         }
     }
@@ -222,16 +222,10 @@ public class UIManager : MonoBehaviour
     public void BackButtonIsPressed()
     {
         Debug.Log("Back");
-        if (isShowingAds 
-            //|| 
-           // currentPanel.name == nameof(SplashAndLoadingScreenUI) || 
-          //  currentPanel.name == nameof(AuthenticationUI)
-		   )
+        if (isShowingAds || currentPanel.name == nameof(GamePlayUI))
         {
         }
-        else if (currentPanel.name == nameof(HomeUI) 
-            //|| currentPanel.name == nameof(UserSetupUI)
-           )
+        else if (currentPanel.name == nameof(HomeUI))
         {
            // SpawnNextPanel(nameof(QuitPanelUI), false);
         }

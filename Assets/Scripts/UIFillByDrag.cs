@@ -151,6 +151,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
             }
 
             currentImage.fillAmount = Mathf.Clamp01(amount);
+            SetLevelCompletionBar();
 
             // Update the flag for switching
             canSelectNextImageToFill = currentImage.fillAmount >= 0.9f;
@@ -182,6 +183,19 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         PuzzleSuccess();
     }
 
+    private float CombineFillAmout() 
+    {
+        float combineFillAmout = 0;
+
+        foreach (Image image in fillImages) 
+        {
+            combineFillAmout = combineFillAmout + image.fillAmount;
+        }
+        combineFillAmout = combineFillAmout / fillImages.Count;
+
+        return combineFillAmout;
+    }
+
     private void PuzzleFail()
     {
         Debug.Log("Puzzle failed — resetting images.");
@@ -189,11 +203,24 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         {
             image.fillAmount = 0;
         }
+        SetLevelCompletionBar();
     }
 
     private void PuzzleSuccess()
     {
         Debug.Log("Puzzle solved!");
-        UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>().LoadNextLevel();
+        LoadNextLevel();
+    }
+
+    private void LoadNextLevel()
+    {
+        if (UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>())
+            UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>().LoadNextLevel();
+    }
+
+    private void SetLevelCompletionBar() 
+    {
+        if (UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>())
+            UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>().SetLevelCompletionBar(CombineFillAmout());
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GamePlayUI : MonoBehaviour
 {
@@ -6,6 +7,8 @@ public class GamePlayUI : MonoBehaviour
     private Transform currentLevelObjParent;
     [SerializeField]
     private string allLevelPathInResourcesFolder = "Levels/";
+    [SerializeField]
+    private Slider levelCompletionBar;
 
     private int currentLevel;
     private GameObject currentLevelObj;
@@ -26,6 +29,8 @@ public class GamePlayUI : MonoBehaviour
         RectTransform rectTrans = currentLevelObj.GetComponent<RectTransform>();
         rectTrans.offsetMin = new Vector2(0, 0);
         rectTrans.offsetMax = new Vector2(0, 0);
+
+        SetLevelCompletionBar(0);
     }
 
     public void LoadNextLevel() 
@@ -35,6 +40,26 @@ public class GamePlayUI : MonoBehaviour
         LoadLevel();
     }
 
+    public void SetLevelCompletionBar(float _value) 
+    {
+        levelCompletionBar.value = _value;
+    }
 
+    public void HowToPlayButtonCall()
+    {
+        UIManager.GetInstance().SpawnNextPanel(nameof(HowToPlayUI),false);
+    }
 
+    public void SettingsButtonCall() 
+    {
+        UIManager.GetInstance().SpawnNextPanel(nameof(SettingsUI), false);
+    }
+
+    public void HintButtonCall() 
+    {
+    }
+
+    public void SkipPuzzleButtonCall() 
+    {
+    }
 }
