@@ -269,7 +269,7 @@ public class UIManager : MonoBehaviour
             CrossFadeOutAnimation();
         }
 
-        Screen.orientation = ScreenOrientation.LandscapeLeft;
+        //Screen.orientation = ScreenOrientation.LandscapeLeft;
     }
     /// <summary>
     /// this will spawn a panel in the ui on ask. 
