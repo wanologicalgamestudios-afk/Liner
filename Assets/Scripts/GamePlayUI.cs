@@ -47,7 +47,7 @@ public class GamePlayUI : MonoBehaviour
 
     public void HowToPlayButtonCall()
     {
-        UIManager.GetInstance().SpawnNextPanel(nameof(HowToPlayUI),false);
+        UIManager.GetInstance().SpawnNextPanel(nameof(HowToPlayUI),true);
     }
 
     public void SettingsButtonCall() 

@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
         if (PlayerPrefs.GetInt("isFirstRun") == 0)
         {
             // Settings
+            PlayerPrefs.SetInt("isFirstTimeHowToPlayShown", 0);
             PlayerPrefs.SetInt("isSoundOff", 0);
             PlayerPrefs.SetInt("currentLevel", 1);
             PlayerPrefs.SetInt("isVibrationOff", 0);
@@ -48,6 +49,12 @@ public class GameManager : MonoBehaviour
         get { return PlayerPrefs.GetInt("currentLevel"); }
         set { PlayerPrefs.SetInt("currentLevel", value); }
     }
+    public int IsFirstTimeHowToPlayShown
+    {
+        get { return PlayerPrefs.GetInt("isFirstTimeHowToPlayShown", 0); ; }
+        set { PlayerPrefs.SetInt("isFirstTimeHowToPlayShown", value); ; }
+    }
+
     public void GiveAndSaveDailyReward()
     {
         //this.signupLoginMetadata = new SignupLoginMetadata();

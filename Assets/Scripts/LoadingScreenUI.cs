@@ -64,7 +64,16 @@ public class LoadingScreenUI : MonoBehaviour
 
     void OnComplete()
     {
-        UIManager.GetInstance().SpawnNextPanel(nameof(GamePlayUI), true);
+        if (UIManager.GetInstance().GameManager.IsFirstTimeHowToPlayShown == 0) 
+        {
+            UIManager.GetInstance().GameManager.IsFirstTimeHowToPlayShown = 1;
+            UIManager.GetInstance().SpawnNextPanel(nameof(HowToPlayUI), true);
+        }
+        else 
+        {
+            UIManager.GetInstance().SpawnNextPanel(nameof(GamePlayUI), true);
+        }
+        
         // Debug.Log("Slider reached the end!");
         // Add your completion logic here
     }

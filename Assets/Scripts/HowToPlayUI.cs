@@ -8,9 +8,8 @@ public class HowToPlayUI : MonoBehaviour
         
     }
 
-    // Update is called once per frame
-    void Update()
+    public void GotitButtonCall() 
     {
-        
+        UIManager.GetInstance().SpawnNextPanel(nameof(GamePlayUI), true);
     }
 }

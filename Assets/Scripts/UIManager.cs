@@ -222,7 +222,7 @@ public class UIManager : MonoBehaviour
     public void BackButtonIsPressed()
     {
         Debug.Log("Back");
-        if (isShowingAds || currentPanel.name == nameof(GamePlayUI))
+        if (isShowingAds || currentPanel.name == nameof(GamePlayUI) || currentPanel.name == nameof(HowToPlayUI))
         {
         }
         else if (currentPanel.name == nameof(HomeUI))
