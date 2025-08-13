@@ -51,8 +51,13 @@ public class GameManager : MonoBehaviour
     }
     public int IsFirstTimeHowToPlayShown
     {
-        get { return PlayerPrefs.GetInt("isFirstTimeHowToPlayShown", 0); ; }
-        set { PlayerPrefs.SetInt("isFirstTimeHowToPlayShown", value); ; }
+        get { return PlayerPrefs.GetInt("isFirstTimeHowToPlayShown", 0);}
+        set { PlayerPrefs.SetInt("isFirstTimeHowToPlayShown", value); }
+    }
+    public int IsVibrationOff
+    {
+        get { return PlayerPrefs.GetInt("isVibrationOff", 0);}
+        set { PlayerPrefs.SetInt("isVibrationOff", 0); }
     }
 
     public void GiveAndSaveDailyReward()

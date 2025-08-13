@@ -199,6 +199,45 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
     private void PuzzleFail()
     {
         Debug.Log("Puzzle failed — resetting images.");
+        if (UIManager.GetInstance().GameManager.IsVibrationOff == 0) 
+        {
+            // Short vibration cross-platform
+#if UNITY_ANDROID && !UNITY_EDITOR
+    // Short buzz on Android (50ms)
+    using (var unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+    {
+        var activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+        var vibrator = activity.Call<AndroidJavaObject>("getSystemService", "vibrator");
+
+        using (var version = new AndroidJavaClass("android.os.Build$VERSION"))
+        {
+            int api = version.GetStatic<int>("SDK_INT");
+            if (api >= 26)
+            {
+                using (var vibrationEffectClass = new AndroidJavaClass("android.os.VibrationEffect"))
+                {
+                    var effect = vibrationEffectClass.CallStatic<AndroidJavaObject>(
+                        "createOneShot", 50L, vibrationEffectClass.GetStatic<int>("DEFAULT_AMPLITUDE"));
+                    vibrator.Call("vibrate", effect);
+                }
+            }
+            else
+            {
+                vibrator.Call("vibrate", 50L);
+            }
+        }
+    }
+#elif UNITY_IOS && !UNITY_EDITOR
+    // iOS default vibration (short tap)
+    Handheld.Vibrate();
+#else
+            // In Editor, simulate vibration
+            Debug.Log("Vibrate (short) simulated in editor.");
+#endif
+        }
+
+
+        Debug.Log("Puzzle failed — resetting images.");
         foreach (Image image in fillImages)
         {
             image.fillAmount = 0;

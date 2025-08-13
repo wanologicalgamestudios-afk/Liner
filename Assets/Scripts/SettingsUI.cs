@@ -16,6 +16,10 @@ public class SettingsUI : MonoBehaviour
 
     public void MusicButtonCall(Toggle _musicToggle) 
     {
+        if (_musicToggle.isOn) 
+        {
+            //UIManager
+        }
     }
 
     public void SoundButtonCall(Toggle _soundToggle)
@@ -24,5 +28,13 @@ public class SettingsUI : MonoBehaviour
 
     public void ViberationButtonCall(Toggle _viberationToggle)
     {
+        if (_viberationToggle.isOn)
+        {
+            UIManager.GetInstance().GameManager.IsVibrationOff = 1;
+        }
+        else 
+        {
+            UIManager.GetInstance().GameManager.IsVibrationOff = 0;
+        }
     }
 }
