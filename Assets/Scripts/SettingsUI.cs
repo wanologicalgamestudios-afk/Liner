@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SettingsUI : MonoBehaviour
 {
@@ -8,9 +9,20 @@ public class SettingsUI : MonoBehaviour
         
     }
 
-    // Update is called once per frame
-    void Update()
+    public void CrossButtonCall() 
     {
-        
+        UIManager.GetInstance().BackButtonIsPressed();
+    }
+
+    public void MusicButtonCall(Toggle _musicToggle) 
+    {
+    }
+
+    public void SoundButtonCall(Toggle _soundToggle)
+    {
+    }
+
+    public void ViberationButtonCall(Toggle _viberationToggle)
+    {
     }
 }
