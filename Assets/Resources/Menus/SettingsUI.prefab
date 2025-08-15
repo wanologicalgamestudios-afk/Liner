@@ -603,7 +603,7 @@ GameObject:
   - component: {fileID: 4206923347778926977}
   - component: {fileID: 6903015212088196552}
   m_Layer: 5
-  m_Name: ViberationToggle
+  m_Name: VibrationToggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -678,7 +678,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1415768500069391673}
         m_TargetAssemblyTypeName: SettingsUI, Assembly-CSharp
-        m_MethodName: ViberationButtonCall
+        m_MethodName: VibrationButtonCall
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 6903015212088196552}
@@ -1025,6 +1025,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b60de1ee35f52fc4893c30f54bf22716, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vibrationToggle: {fileID: 6903015212088196552}
+  musicToggle: {fileID: 7820012400416874826}
+  soundToggle: {fileID: 3296789169008231150}
 --- !u!1 &8116172248877544690
 GameObject:
   m_ObjectHideFlags: 0
