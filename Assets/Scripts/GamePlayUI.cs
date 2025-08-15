@@ -25,7 +25,12 @@ public class GamePlayUI : MonoBehaviour
     {
         currentLevel = UIManager.GetInstance().GameManager.CurerntLevel;
 
-        var prefabe = Resources.Load(allLevelPathInResourcesFolder+"Level"+ currentLevel);
+        if (Resources.Load(allLevelPathInResourcesFolder + "Level" + currentLevel) ==  null) 
+        {
+            UIManager.GetInstance().GameManager.CurerntLevel = 1;
+            currentLevel = UIManager.GetInstance().GameManager.CurerntLevel;
+        }
+        var prefabe = Resources.Load(allLevelPathInResourcesFolder + "Level" + currentLevel);
         currentLevelObj = Instantiate(prefabe) as GameObject;
         currentLevelObj.transform.SetParent(currentLevelObjParent);
         currentLevelObj.transform.localScale = Vector3.one;
