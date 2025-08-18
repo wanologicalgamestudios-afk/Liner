@@ -363,6 +363,71 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &500108974
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 500108976}
+  - component: {fileID: 500108975}
+  m_Layer: 0
+  m_Name: AdManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &500108975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 500108974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a98f4133c685b04e867c3ea79bdc8d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  AreTheseTestAds: 1
+  androidTestBannerAdUnitId: ca-app-pub-3940256099942544/6300978111
+  androidTestInterstitialAdUnitId: ca-app-pub-3940256099942544/1033173712
+  androidTestRewardedAdUnitId: ca-app-pub-3940256099942544/5224354917
+  androidTestRewardedInterstitialAdUnitId: ca-app-pub-3940256099942544/5354046379
+  androidTestAppOpenAdUnitId: ca-app-pub-3940256099942544/3419835294
+  iOSTestBannerAdUnitId: ca-app-pub-3940256099942544/2934735716
+  iOSTestInterstitialAdUnitId: ca-app-pub-3940256099942544/4411468910
+  iOSTestRewardedAdUnitId: ca-app-pub-3940256099942544/1712485313
+  iOSTestRewardedInterstitialAdUnitId: ca-app-pub-3940256099942544/6978759866
+  iOSTestAppOpenAdUnitId: ca-app-pub-3940256099942544/5662855259
+  androidBannerAdUnitId: ca-app-pub-3940256099942544/2934735716
+  androidInterstitialAdUnitId: ca-app-pub-3940256099942544/4411468910
+  androidRewardedAdUnitId: ca-app-pub-3940256099942544/1712485313
+  androidRewardedInterstitialAdUnitId: ca-app-pub-3940256099942544/6978759866
+  androidAppOpenAdUnitId: ca-app-pub-3940256099942544/5662855259
+  iOSBannerAdUnitId: ca-app-pub-3940256099942544/2934735716
+  iOSInterstitialAdUnitId: ca-app-pub-3940256099942544/4411468910
+  iOSRewardedAdUnitId: ca-app-pub-3940256099942544/1712485313
+  iOSRewardedInterstitialAdUnitId: ca-app-pub-3940256099942544/6978759866
+  iOSAppOpenAdUnitId: ca-app-pub-3940256099942544/5662855259
+--- !u!4 &500108976
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 500108974}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 197.92836, y: 346.23978, z: -0.8479211}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &861568517
 GameObject:
   m_ObjectHideFlags: 0
@@ -1031,13 +1096,41 @@ PrefabInstance:
       value: -0.0009765625
       objectReference: {fileID: 0}
     - target: {fileID: 2472708272665272489, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
+      propertyPath: m_fontSize
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 2472708272665272489, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+      objectReference: {fileID: 11400000, guid: 0b9dd18d3303b7b40a3f073007733c81, type: 2}
+    - target: {fileID: 2472708272665272489, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.7137255
+      objectReference: {fileID: 0}
+    - target: {fileID: 2472708272665272489, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.6862745
+      objectReference: {fileID: 0}
+    - target: {fileID: 2472708272665272489, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.6666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 2472708272665272489, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 50
+      objectReference: {fileID: 0}
     - target: {fileID: 2472708272665272489, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+      objectReference: {fileID: -4116444426476582803, guid: 0b9dd18d3303b7b40a3f073007733c81, type: 2}
+    - target: {fileID: 2472708272665272489, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4290162602
+      objectReference: {fileID: 0}
+    - target: {fileID: 2472708272665272489, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
+      propertyPath: m_hasFontAssetChanged
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2775796388722418490, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1144,7 +1237,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7198672017056482032, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7547666291666798374, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
+      propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7948750090048512428, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
+      propertyPath: m_Type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7948750090048512428, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+    - target: {fileID: 7948750090048512428, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
+      propertyPath: m_Color.b
+      value: 0.7735849
+      objectReference: {fileID: 0}
+    - target: {fileID: 7948750090048512428, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
+      propertyPath: m_Color.g
+      value: 0.20799215
+      objectReference: {fileID: 0}
+    - target: {fileID: 7948750090048512428, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
+      propertyPath: m_Color.r
+      value: 0.75719094
       objectReference: {fileID: 0}
     - target: {fileID: 8965605686320588529, guid: af9dcc77d5abf054db06ba108c53ea6a, type: 3}
       propertyPath: m_fontAsset
@@ -1255,3 +1372,4 @@ SceneRoots:
   - {fileID: 334430271}
   - {fileID: 1447016343}
   - {fileID: 335025523}
+  - {fileID: 500108976}

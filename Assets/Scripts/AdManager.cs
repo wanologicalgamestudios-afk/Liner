@@ -307,12 +307,12 @@ public class AdManager : MonoBehaviour
     public void HandleOnAdCloseRBVA()
     {
         Debug.Log("HandleOnAdCloseRBVA");
+        OnRewaredVideoRewardGiven();
         LoadRewardedAd();
     }
     public void HandleOnAdRewardedRBVA(object sender, EventArgs args)
     {
         Debug.Log("HandleOnAdRewardedRBVA");
-        OnRewaredVideoRewardGiven();
     }
     public void HandleOnAdLeavingApplicationRBVA(object sender, EventArgs args)
     {

@@ -49,8 +49,15 @@ public class GamePlayUI : MonoBehaviour
     private void SetLevelName() 
     {
         levelName.text = "Level " + currentLevel;
-    } 
-
+    }
+    private void ShowHint() 
+    {
+        autoImageFiller.PlayHint();
+    }
+    private void OnAdNotReayYet() 
+    {
+        UIManager.GetInstance().ActiveMessagePanel("Ad is not ready yet.");
+    }
     public void LoadNextLevel() 
     {
         UIManager.GetInstance().GameManager.CurerntLevel = UIManager.GetInstance().GameManager.CurerntLevel + 1;
@@ -75,11 +82,11 @@ public class GamePlayUI : MonoBehaviour
 
     public void HintButtonCall() 
     {
-        autoImageFiller.PlayHint();
+        AdManager.Instance.ShowRewardedAd(ShowHint, OnAdNotReayYet);
     }
 
     public void SkipPuzzleButtonCall() 
     {
-        LoadNextLevel();
+        AdManager.Instance.ShowRewardedAd(LoadNextLevel, OnAdNotReayYet);
     }
 }

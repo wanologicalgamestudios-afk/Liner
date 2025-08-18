@@ -58,6 +58,8 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
         Image hitImage = GetImageUnderPointer(eventData);
 
+        Debug.Log(hitImage.name);
+
         if (hitImage != null)
         {
             if (hitImage.fillAmount >= 1) 
