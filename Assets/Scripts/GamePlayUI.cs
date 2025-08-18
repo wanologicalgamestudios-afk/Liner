@@ -15,6 +15,7 @@ public class GamePlayUI : MonoBehaviour
 
     private int currentLevel;
     private GameObject currentLevelObj;
+    private AutoImageFiller autoImageFiller;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
@@ -37,6 +38,9 @@ public class GamePlayUI : MonoBehaviour
         RectTransform rectTrans = currentLevelObj.GetComponent<RectTransform>();
         rectTrans.offsetMin = new Vector2(0, 0);
         rectTrans.offsetMax = new Vector2(0, 0);
+
+        autoImageFiller = new AutoImageFiller();
+        autoImageFiller = currentLevelObj.GetComponent<AutoImageFiller>();
 
         SetLevelCompletionBar(0);
         SetLevelName();
@@ -71,9 +75,11 @@ public class GamePlayUI : MonoBehaviour
 
     public void HintButtonCall() 
     {
+        autoImageFiller.PlayHint();
     }
 
     public void SkipPuzzleButtonCall() 
     {
+        LoadNextLevel();
     }
 }
