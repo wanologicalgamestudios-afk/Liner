@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
-    [SerializeField]
     private List<Image> fillImages = new List<Image>();
 
     private Image currentImage;
@@ -14,7 +13,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
     private bool fillFromLeft = true;
 
     // New variable to control image switching
-    private bool canSelectNextImageToFill = false;
+    //private bool canSelectNextImageToFill = false;
 
     void Start()
     {
@@ -41,7 +40,6 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
     public void OnPointerDown(PointerEventData eventData)
     {
         Image hitImage = GetImageUnderPointer(eventData);
-        // if (hitImage != null && !lockedImages.Contains(hitImage))
         if (hitImage != null)
         {
             currentImage = hitImage;
@@ -58,27 +56,37 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
         Image hitImage = GetImageUnderPointer(eventData);
 
-        Debug.Log(hitImage.name);
+ 
 
-        if (hitImage != null)
+        //if (hitImage != null)
+        //{
+        //    if (hitImage.fillAmount >= 1) 
+        //    {
+        //        hitImage = null;
+        //    }
+        //}
+        if (hitImage != null && hitImage != currentImage && hitImage.fillAmount < 1)
         {
-            if (hitImage.fillAmount >= 1) 
+            if (!fillImages.Contains(hitImage)) return;
+
+            if (currentImage.fillAmount >= 0.8f) 
             {
-                hitImage = null;
+                currentImage.fillAmount = 1.0f;
             }
-        }
+            else
+            {
+                currentImage.fillAmount = 0.0f;
+            }
 
-        // if (hitImage != null && hitImage != currentImage && !lockedImages.Contains(hitImage))
-        if (hitImage != null && hitImage != currentImage)
-        {
+
             // Only allow switching if the flag is true
-            if (canSelectNextImageToFill)
-            {
-                currentImage = hitImage;
-                currentRectTransform = currentImage.GetComponent<RectTransform>();
-                DetectFillDirection(eventData);
-                canSelectNextImageToFill = false; // reset for the new image
-            }
+            // if (canSelectNextImageToFill)
+            //  {
+            currentImage = hitImage;
+            currentRectTransform = currentImage.GetComponent<RectTransform>();
+            DetectFillDirection(eventData);
+             //   canSelectNextImageToFill = false; // reset for the new image
+          //  }
         }
 
         UpdateFill(eventData);
@@ -156,19 +164,19 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
             SetLevelCompletionBar();
 
             // Update the flag for switching
-            canSelectNextImageToFill = currentImage.fillAmount >= 0.9f;
+            //canSelectNextImageToFill = currentImage.fillAmount >= 0.9f;
 
-            if (canSelectNextImageToFill) 
-            {
-                currentImage.fillAmount = 1.0f;
-                canSelectNextImageToFill = true;
-            }
+            //if (canSelectNextImageToFill) 
+            //{
+            //    currentImage.fillAmount = 1.0f;
+            //    canSelectNextImageToFill = true;
+            //}
 
-            if (currentImage.fillAmount >= 1.0f)
-            {
-                currentImage.fillAmount = 1.0f;
-                canSelectNextImageToFill = true;
-            }
+            //if (currentImage.fillAmount >= 1.0f)
+            //{
+            //    currentImage.fillAmount = 1.0f;
+            //    canSelectNextImageToFill = true;
+            //}
         }
     }
 
