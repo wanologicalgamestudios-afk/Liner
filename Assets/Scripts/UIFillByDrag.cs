@@ -305,15 +305,11 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
     private void PuzzleFail()
     {
-        Debug.Log("Puzzle failed — resetting images.");
         if (UIManager.GetInstance().GameManager.IsVibrationOff == 0) 
         {
             // Short vibration cross-platform
             Handheld.Vibrate();
         }
-
-
-        Debug.Log("Puzzle failed — resetting images.");
         foreach (Image image in fillImages)
         {
             image.fillAmount = 0;
@@ -323,7 +319,6 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
     private void PuzzleSuccess()
     {
-        Debug.Log("Puzzle solved!");
         LoadNextLevel();
     }
 
