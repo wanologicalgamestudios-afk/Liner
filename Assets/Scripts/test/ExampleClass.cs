@@ -15,11 +15,13 @@ public class ExampleClass : MonoBehaviour
     private Vector3 rightEdge;
     [SerializeField]
     List<Image> allImages = new List<Image>();
-    [SerializeField]
-    List<Image> allImagesOverlaped = new List<Image>();
+   // [SerializeField]
+   // List<Image> allImagesOverlaped = new List<Image>();
+    [SerializeField] List<Image> allImagesOverlapedLeft = new List<Image>();
+    [SerializeField] List<Image> allImagesOverlapedRight = new List<Image>();
     RectTransform myRectTr;
     Rect myRect ;
-    Rect otherrect;
+    Rect otherRect;
 
     void Start()
     {
@@ -27,26 +29,51 @@ public class ExampleClass : MonoBehaviour
         myRect = GetWorldRect(myRectTr);
    
         DisplayWorldCorners();
+        FindOverLapingImage();
     }
 
     private void Update()
     {
-        FindOverLapingImage();
+     
     }
-    private void FindOverLapingImage() 
+    private void FindOverLapingImage()
     {
-        allImagesOverlaped = new List<Image>();
+        allImagesOverlapedLeft.Clear();
+        allImagesOverlapedRight.Clear();
 
-        for( int i = 0; i < allImages.Count; i++) 
+        float leftEdge = myRect.xMin;
+        float rightEdge = myRect.xMax;
+        Debug.Log("QPPPPPPPPP" + leftEdge);
+        Debug.Log("QPPPPPPPPP" + rightEdge);
+
+        for (int i = 0; i < allImages.Count; i++)
         {
-            otherrect = GetWorldRect(allImages[i].GetComponent<RectTransform>());
+            otherRect = GetWorldRect(allImages[i].GetComponent<RectTransform>());
 
-            if (myRect.Overlaps(otherrect,true)) 
+            Debug.Log("p otherRect" + otherRect);
+
+            if (myRect.Overlaps(otherRect, true))
             {
-                allImagesOverlaped.Add(allImages[i]);
+                Debug.Log(myRectTr.name + "Overlap = " + allImages[i].name);
+                // Find the horizontal center of the other rect
+                float otherCenterX = otherRect.center.x;
+
+                // Compare distances to left and right edges
+                float distToLeft = Mathf.Abs(otherCenterX - leftEdge);
+                float distToRight = Mathf.Abs(otherCenterX - rightEdge);
+
+                if (distToLeft < distToRight)
+                {
+                    allImagesOverlapedLeft.Add(allImages[i]);
+                }
+                else
+                {
+                    allImagesOverlapedRight.Add(allImages[i]);
+                }
             }
         }
     }
+
     Rect GetWorldRect(RectTransform rt)
     {
         Vector3[] corners = new Vector3[4];
