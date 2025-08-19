@@ -113,7 +113,7 @@ public class AdManager : MonoBehaviour
             appOpenAdUnitId = iOSTestAppOpenAdUnitId;
 
             #else
-            adUnitID = "unused";
+          //  adUnitID = "unused";
             #endif
         }
         else 
@@ -133,7 +133,7 @@ public class AdManager : MonoBehaviour
             appOpenAdUnitId = iOSAppOpenAdUnitId;
 
             #else
-            adUnitID = "unused";
+          //  adUnitID = "unused";
             #endif
         }
     }
