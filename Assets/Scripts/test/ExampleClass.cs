@@ -24,7 +24,7 @@ public class ExampleClass : MonoBehaviour
     void Start()
     {
         myRectTr = GetComponent<RectTransform>();
-        myRect = myRectTr.rect;
+        myRect = GetWorldRect(myRectTr);
    
         DisplayWorldCorners();
     }
@@ -39,7 +39,7 @@ public class ExampleClass : MonoBehaviour
 
         for( int i = 0; i < allImages.Count; i++) 
         {
-            otherrect = allImages[i].GetComponent<RectTransform>().rect;
+            otherrect = GetWorldRect(allImages[i].GetComponent<RectTransform>());
 
             if (myRect.Overlaps(otherrect,true)) 
             {
@@ -47,6 +47,17 @@ public class ExampleClass : MonoBehaviour
             }
         }
     }
+    Rect GetWorldRect(RectTransform rt)
+    {
+        Vector3[] corners = new Vector3[4];
+        rt.GetWorldCorners(corners);
+
+        float width = corners[2].x - corners[0].x;
+        float height = corners[2].y - corners[0].y;
+
+        return new Rect(corners[0].x, corners[0].y, width, height);
+    }
+
     void DisplayWorldCorners()
     {
         Vector3[] v = new Vector3[4];
@@ -62,4 +73,6 @@ public class ExampleClass : MonoBehaviour
             Debug.Log("World Corner " + i + " : " + v[i]);
         }
     }
+
+
 }
