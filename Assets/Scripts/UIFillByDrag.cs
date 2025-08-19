@@ -12,6 +12,15 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
     private bool isDragging = false;
     private bool fillFromLeft = true;
 
+    private Dictionary<string, ImageHavingsMetaData> imagesHavingsMetaData;
+   
+    private Rect myRect;
+    private Rect otherRect;
+
+    private List<Image> nextToBeSelectedFormImages;
+    private bool isOneAlreadyCompleted;
+    private Image ImageToSetHavings;
+
     // New variable to control image switching
     //private bool canSelectNextImageToFill = false;
 
@@ -35,10 +44,74 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
             Debug.LogError("No Image components found.");
             enabled = false;
         }
+
+        ImageHavingSetup();
+    }
+    private void ImageHavingSetup() 
+    {
+        imagesHavingsMetaData = new Dictionary<string, ImageHavingsMetaData>();
+
+        for (int i = 0; i < fillImages.Count; i++)
+        {
+            ImageHavingsMetaData imageHavingsMetaData = new ImageHavingsMetaData();
+
+            imageHavingsMetaData.allImagesOverlapedLeft = new List<Image>();
+            imageHavingsMetaData.allImagesOverlapedRight = new List<Image>();
+
+            Image mainImage = fillImages[i].GetComponent<Image>();
+            
+            myRect = GetWorldRect(mainImage.GetComponent<RectTransform>());
+
+            float leftEdge = myRect.xMin;
+
+            float rightEdge = myRect.xMax;
+           
+
+            for (int j = 0; j < fillImages.Count; j++)
+            {
+                if (fillImages[j].name != mainImage.name)
+                {
+                    otherRect = GetWorldRect(fillImages[j].GetComponent<RectTransform>());
+
+
+                    if (myRect.Overlaps(otherRect, true))
+                    {
+                        // Find the horizontal center of the other rect
+                        float otherCenterX = otherRect.center.x;
+
+                        // Compare distances to left and right edges
+                        float distToLeft = Mathf.Abs(otherCenterX - leftEdge);
+                        float distToRight = Mathf.Abs(otherCenterX - rightEdge);
+
+                        if (distToLeft < distToRight)
+                        {
+                            imageHavingsMetaData.allImagesOverlapedLeft.Add(fillImages[j]);
+                        }
+                        else
+                        {
+                            imageHavingsMetaData.allImagesOverlapedRight.Add(fillImages[j]);
+                        }
+                    }
+                }
+            }
+           
+            imagesHavingsMetaData.Add(mainImage.name, imageHavingsMetaData);
+        }
+    }
+    Rect GetWorldRect(RectTransform rt)
+    {
+        Vector3[] corners = new Vector3[4];
+        rt.GetWorldCorners(corners);
+
+        float width = corners[2].x - corners[0].x;
+        float height = corners[2].y - corners[0].y;
+
+        return new Rect(corners[0].x, corners[0].y, width, height);
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        isOneAlreadyCompleted = false;
         Image hitImage = GetImageUnderPointer(eventData);
         if (hitImage != null)
         {
@@ -46,6 +119,8 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
             currentRectTransform = currentImage.GetComponent<RectTransform>();
             isDragging = true;
             DetectFillDirection(eventData);
+            ImageToSetHavings = hitImage;
+            SetImageHavings(ImageToSetHavings);
             UpdateFill(eventData);
         }
     }
@@ -56,28 +131,24 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
         Image hitImage = GetImageUnderPointer(eventData);
 
- 
-
-        //if (hitImage != null)
-        //{
-        //    if (hitImage.fillAmount >= 1) 
-        //    {
-        //        hitImage = null;
-        //    }
-        //}
         if (hitImage != null && hitImage != currentImage && hitImage.fillAmount < 1)
         {
             if (!fillImages.Contains(hitImage)) return;
 
-            if (currentImage.fillAmount >= 0.8f) 
+            if(!nextToBeSelectedFormImages.Contains(hitImage) && isOneAlreadyCompleted) return;
+
+            if (currentImage.fillAmount >= 0.8f)
             {
                 currentImage.fillAmount = 1.0f;
+                isOneAlreadyCompleted = true;
+                Debug.Log("currentImage = "+currentImage);
+                ImageToSetHavings = currentImage;
+                SetImageHavings(ImageToSetHavings);
             }
             else
             {
                 currentImage.fillAmount = 0.0f;
             }
-
 
             // Only allow switching if the flag is true
             // if (canSelectNextImageToFill)
@@ -91,6 +162,27 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
         UpdateFill(eventData);
     }
+
+    private void SetImageHavings(Image imageToSetNext) 
+    {
+        nextToBeSelectedFormImages = new List<Image>();
+        //To Right
+        if (fillFromLeft)
+        {
+            nextToBeSelectedFormImages = imagesHavingsMetaData[imageToSetNext.name].allImagesOverlapedRight;
+        }
+        //To Left
+        else
+        {
+            nextToBeSelectedFormImages = imagesHavingsMetaData[imageToSetNext.name].allImagesOverlapedLeft;
+        }
+
+        //foreach (Image image in nextToBeSelectedFormImages)
+        //{
+        //    Debug.Log("nextToBeSelectedFormImages "+image.name);
+        //}
+    }
+
 
     public void OnPointerUp(PointerEventData eventData)
     {
@@ -163,6 +255,11 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
             currentImage.fillAmount = Mathf.Clamp01(amount);
             SetLevelCompletionBar();
 
+            if (currentImage.fillAmount >= 0.8f)
+            {
+                ImageToSetHavings = currentImage;
+                SetImageHavings(ImageToSetHavings);
+            }
             // Update the flag for switching
             //canSelectNextImageToFill = currentImage.fillAmount >= 0.9f;
 
@@ -240,5 +337,12 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
     {
         if (UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>())
             UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>().SetLevelCompletionBar(CombineFillAmout());
+    }
+
+
+    public class ImageHavingsMetaData
+    {
+        public List<Image> allImagesOverlapedLeft = new List<Image>();
+        public List<Image> allImagesOverlapedRight = new List<Image>();
     }
 }
