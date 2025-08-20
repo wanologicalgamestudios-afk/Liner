@@ -98,7 +98,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
                     if (mainImageRect.Overlaps(otherImageRect, true))
                     {
-                       // Debug.Log(mainImage.name + " " + fillImages[j].name);
+                        Debug.Log(mainImage.name + " " + fillImages[j].name);
 
                         // Left Right overlaping Info storage
                         OverlapedImageInfo overlapedImageInfo = new OverlapedImageInfo();
@@ -128,28 +128,28 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
                         // If MainRectLeft And OtherRectLeft Overlaped
                         if (minDistance == distanceMainRectLeftAndOtherRectLeft)
                         {
-                            //Debug.Log(fillImages[j].name + "Smallest: MainRect LEFT / OtherRect LEFT, Distance = " + minDistance);
+                            Debug.Log(fillImages[j].name + "Smallest: MainRect LEFT / OtherRect LEFT, Distance = " + minDistance);
                             overlapedImageInfo.overlapedSide = OverlapedSide.LEFT;
                             imagesOverlapedMetaData.allImagesOverlapedOnLeft.Add(fillImages[j].name, overlapedImageInfo);
                         }
                         // If MainRectLeft And OtherRectRight Overlaped
                         else if (minDistance == distanceMainRectLeftAndOtherRectRight)
                         {
-                            //Debug.Log(fillImages[j].name + "Smallest: MainRect LEFT / OtherRect RIGHT, Distance = " + minDistance);
+                            Debug.Log(fillImages[j].name + "Smallest: MainRect LEFT / OtherRect RIGHT, Distance = " + minDistance);
                             overlapedImageInfo.overlapedSide = OverlapedSide.RIGHT;
                             imagesOverlapedMetaData.allImagesOverlapedOnLeft.Add(fillImages[j].name, overlapedImageInfo);
                         }
                         // If MainRectLeft And OtherRectLeft Overlaped
                         else if (minDistance == distanceMainRectRightAndOtherRectLeft)
                         {
-                            //Debug.Log(fillImages[j].name + "Smallest: MainRect RIGHT / OtherRect LEFT, Distance = " + minDistance);
+                            Debug.Log(fillImages[j].name + "Smallest: MainRect RIGHT / OtherRect LEFT, Distance = " + minDistance);
                             overlapedImageInfo.overlapedSide = OverlapedSide.LEFT;
                             imagesOverlapedMetaData.allImagesOverlapedOnRight.Add(fillImages[j].name, overlapedImageInfo);
                         }
                         // If MainRectLeft And OtherRectLeft Overlaped
                         else
                         {
-                            //Debug.Log(fillImages[j].name + "Smallest: MainRect RIGHT / OtherRect RIGHT, Distance = " + minDistance);
+                            Debug.Log(fillImages[j].name + "Smallest: MainRect RIGHT / OtherRect RIGHT, Distance = " + minDistance);
                             overlapedImageInfo.overlapedSide = OverlapedSide.RIGHT;
                             imagesOverlapedMetaData.allImagesOverlapedOnRight.Add(fillImages[j].name, overlapedImageInfo);
                         }
