@@ -43,33 +43,56 @@ public class ExampleClass : MonoBehaviour
 
         float leftEdge = myRect.xMin;
         float rightEdge = myRect.xMax;
-        Debug.Log("QPPPPPPPPP" + leftEdge);
-        Debug.Log("QPPPPPPPPP" + rightEdge);
+
+        Debug.Log("leftEdge " + leftEdge);
+        Debug.Log("rightEdge " + rightEdge);
 
         for (int i = 0; i < allImages.Count; i++)
         {
             otherRect = GetWorldRect(allImages[i].GetComponent<RectTransform>());
 
-            Debug.Log("p otherRect" + otherRect);
+            //Debug.Log("p otherRect" + otherRect);
 
             if (myRect.Overlaps(otherRect, true))
             {
-                Debug.Log(myRectTr.name + "Overlap = " + allImages[i].name);
-                // Find the horizontal center of the other rect
-                float otherCenterX = otherRect.center.x;
+               // Debug.Log(myRectTr.name + "Overlap = " + allImages[i].name);
 
-                // Compare distances to left and right edges
-                float distToLeft = Mathf.Abs(otherCenterX - leftEdge);
-                float distToRight = Mathf.Abs(otherCenterX - rightEdge);
+                // Calculate the overlap rectangle
+                float overlapXMin = Mathf.Max(myRect.xMin, otherRect.xMin);
+                float overlapXMax = Mathf.Min(myRect.xMax, otherRect.xMax);
+                float overlapYMin = Mathf.Max(myRect.yMin, otherRect.yMin);
+                float overlapYMax = Mathf.Min(myRect.yMax, otherRect.yMax);
 
-                if (distToLeft < distToRight)
+                if (overlapXMax > overlapXMin && overlapYMax > overlapYMin)
                 {
-                    allImagesOverlapedLeft.Add(allImages[i]);
+                    // Find overlap center
+                    float overlapCenterX = (overlapXMin + overlapXMax) / 2f;
+
+
+                    // Distances to edges
+                    float distToLeft = Mathf.Abs(overlapCenterX - myRect.center.x);
+                    float distToRight = Mathf.Abs(overlapCenterX - myRect.center.x);
+
+                    if (distToLeft < distToRight)
+                        allImagesOverlapedLeft.Add(allImages[i]);
+                    else
+                        allImagesOverlapedRight.Add(allImages[i]);
                 }
-                else
-                {
-                    allImagesOverlapedRight.Add(allImages[i]);
-                }
+                //// Find the horizontal center of the other rect
+                //float otherCenterX = otherRect.center.x;
+
+                //// Compare distances to left and right edges
+                //float distToLeft = Mathf.Abs(otherCenterX - leftEdge);
+                //float distToRight = Mathf.Abs(otherCenterX - rightEdge);
+
+                //if (distToLeft < distToRight)
+                //{
+                //    allImagesOverlapedLeft.Add(allImages[i]);
+                //}
+                //else
+                //{
+                //    allImagesOverlapedRight.Add(allImages[i]);
+                //}
             }
         }
     }
@@ -95,10 +118,13 @@ public class ExampleClass : MonoBehaviour
         leftEdge = (v[0] + v[1]) / 2;
         rightEdge = (v[2] + v[3]) / 2;
 
+
         for (var i = 0; i < 4; i++)
         {
-            Debug.Log("World Corner " + i + " : " + v[i]);
+            Debug.Log(this.transform.name+" World Corner " + i + " : " + v[i]);
         }
+        Debug.Log("leftEdge "+ leftEdge);
+        Debug.Log("rightEdge " + rightEdge);
     }
 
 

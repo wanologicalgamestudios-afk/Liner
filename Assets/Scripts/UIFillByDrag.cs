@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
@@ -12,19 +12,42 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
     private bool isDragging = false;
     private bool fillFromLeft = true;
 
-    private Dictionary<string, ImageHavingsMetaData> imagesHavingsMetaData;
-   
-    private Rect myRect;
-    private Rect otherRect;
+    private Dictionary<string, ImagesOverlapedMetaData> imagesOverlapedMetaDatas;
 
-    private List<Image> nextToBeSelectedFormImages;
-    private bool isOneAlreadyCompleted;
-    private Image ImageToSetHavings;
+    private Rect mainImageRect;
+    private Rect otherImageRect;
+
+    Vector3[] imageCorners;
+    List <Vector3> imageEdges;
+    List<Vector3> mainImageEdges;
+    Vector3 mainImageLeftEdge;
+    Vector3 mainImageRightEdge;
+    List<Vector3> otherImageEdges;
+    Vector3 otherImageLeftEdge;
+    Vector3 otherImageRightEdge;
+
+    private Image mainImage;
+
+    float distanceMainRectLeftAndOtherRectLeft;
+    float distanceMainRectLeftAndOtherRectRight;
+    float distanceMainRectRightAndOtherRectLeft;
+    float distanceMainRectRightAndOtherRectRight;
+
+    Dictionary<string, OverlapedImageInfo> nextToBeSelectedFormImages;
+   // private List<Image> nextToBeSelectedFormImages;
+    private bool isFirstFilled;
+    private Image imageBeingFilled;
 
     // New variable to control image switching
     //private bool canSelectNextImageToFill = false;
 
     void Start()
+    {
+        GetAllFillAbleImages();
+        ImageHavingSetup();
+    }
+
+    private void GetAllFillAbleImages() 
     {
         if (fillImages.Count == 0)
         {
@@ -44,74 +67,123 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
             Debug.LogError("No Image components found.");
             enabled = false;
         }
-
-        ImageHavingSetup();
     }
-    private void ImageHavingSetup() 
+
+    private void ImageHavingSetup()
     {
-        imagesHavingsMetaData = new Dictionary<string, ImageHavingsMetaData>();
+        imagesOverlapedMetaDatas = new Dictionary<string, ImagesOverlapedMetaData>();
 
         for (int i = 0; i < fillImages.Count; i++)
         {
-            ImageHavingsMetaData imageHavingsMetaData = new ImageHavingsMetaData();
+            ImagesOverlapedMetaData imagesOverlapedMetaData = new ImagesOverlapedMetaData();
+            imagesOverlapedMetaData.allImagesOverlapedOnLeft = new Dictionary<string, OverlapedImageInfo>();
+            imagesOverlapedMetaData.allImagesOverlapedOnRight = new Dictionary<string, OverlapedImageInfo>();
 
-            imageHavingsMetaData.allImagesOverlapedLeft = new List<Image>();
-            imageHavingsMetaData.allImagesOverlapedRight = new List<Image>();
+            mainImage = fillImages[i].GetComponent<Image>();
+            mainImageRect = GetWorldRect(mainImage.GetComponent<RectTransform>());
 
-            Image mainImage = fillImages[i].GetComponent<Image>();
-            
-            myRect = GetWorldRect(mainImage.GetComponent<RectTransform>());
+            mainImageEdges = GetEdgesPosition(mainImage.GetComponent<RectTransform>());
+            mainImageLeftEdge = mainImageEdges[0];
+            mainImageRightEdge = mainImageEdges[1];
 
-            float leftEdge = myRect.xMin;
-
-            float rightEdge = myRect.xMax;
-           
+          //  Debug.Log(mainImage.name + " mainRectLeftEdge = " + mainImageLeftEdge);
+          // Debug.Log(mainImage.name + " mainRectRightEdge = " + mainImageRightEdge);
 
             for (int j = 0; j < fillImages.Count; j++)
             {
                 if (fillImages[j].name != mainImage.name)
                 {
-                    otherRect = GetWorldRect(fillImages[j].GetComponent<RectTransform>());
+                    otherImageRect = GetWorldRect(fillImages[j].GetComponent<RectTransform>());
+                    otherImageEdges = GetEdgesPosition(fillImages[j].GetComponent<RectTransform>());
 
-
-                    if (myRect.Overlaps(otherRect, true))
+                    if (mainImageRect.Overlaps(otherImageRect, true))
                     {
-                        // Find the horizontal center of the other rect
-                        float otherCenterX = otherRect.center.x;
+                       // Debug.Log(mainImage.name + " " + fillImages[j].name);
 
-                        // Compare distances to left and right edges
-                        float distToLeft = Mathf.Abs(otherCenterX - leftEdge);
-                        float distToRight = Mathf.Abs(otherCenterX - rightEdge);
+                        // Left Right overlaping Info storage
+                        OverlapedImageInfo overlapedImageInfo = new OverlapedImageInfo();
 
-                        if (distToLeft < distToRight)
+                        otherImageLeftEdge = otherImageEdges[0];
+                        otherImageRightEdge = otherImageEdges[1];
+
+                       // Debug.Log(fillImages[j].name +" otherRectLeftEdge = " + otherImageLeftEdge);
+                       // Debug.Log(fillImages[j].name +" otherRectRightEdge = " + otherImageRightEdge);
+
+                        //mainLeft and otherleft distance
+                        distanceMainRectLeftAndOtherRectLeft = Vector3.Distance(mainImageLeftEdge , otherImageLeftEdge);
+                        distanceMainRectLeftAndOtherRectRight = Vector3.Distance(mainImageLeftEdge , otherImageRightEdge);
+                        distanceMainRectRightAndOtherRectLeft = Vector3.Distance(mainImageRightEdge , otherImageLeftEdge);
+                        distanceMainRectRightAndOtherRectRight = Vector3.Distance(mainImageRightEdge , otherImageRightEdge);
+
+                        // Find smallest
+                        float[] distances = {
+                            distanceMainRectLeftAndOtherRectLeft,
+                            distanceMainRectLeftAndOtherRectRight,
+                            distanceMainRectRightAndOtherRectLeft,
+                            distanceMainRectRightAndOtherRectRight
+                        };
+
+                        float minDistance = Mathf.Min(distances);
+
+                        // If MainRectLeft And OtherRectLeft Overlaped
+                        if (minDistance == distanceMainRectLeftAndOtherRectLeft)
                         {
-                            imageHavingsMetaData.allImagesOverlapedLeft.Add(fillImages[j]);
+                            //Debug.Log(fillImages[j].name + "Smallest: MainRect LEFT / OtherRect LEFT, Distance = " + minDistance);
+                            overlapedImageInfo.overlapedSide = OverlapedSide.LEFT;
+                            imagesOverlapedMetaData.allImagesOverlapedOnLeft.Add(fillImages[j].name, overlapedImageInfo);
                         }
+                        // If MainRectLeft And OtherRectRight Overlaped
+                        else if (minDistance == distanceMainRectLeftAndOtherRectRight)
+                        {
+                            //Debug.Log(fillImages[j].name + "Smallest: MainRect LEFT / OtherRect RIGHT, Distance = " + minDistance);
+                            overlapedImageInfo.overlapedSide = OverlapedSide.RIGHT;
+                            imagesOverlapedMetaData.allImagesOverlapedOnLeft.Add(fillImages[j].name, overlapedImageInfo);
+                        }
+                        // If MainRectLeft And OtherRectLeft Overlaped
+                        else if (minDistance == distanceMainRectRightAndOtherRectLeft)
+                        {
+                            //Debug.Log(fillImages[j].name + "Smallest: MainRect RIGHT / OtherRect LEFT, Distance = " + minDistance);
+                            overlapedImageInfo.overlapedSide = OverlapedSide.LEFT;
+                            imagesOverlapedMetaData.allImagesOverlapedOnRight.Add(fillImages[j].name, overlapedImageInfo);
+                        }
+                        // If MainRectLeft And OtherRectLeft Overlaped
                         else
                         {
-                            imageHavingsMetaData.allImagesOverlapedRight.Add(fillImages[j]);
+                            //Debug.Log(fillImages[j].name + "Smallest: MainRect RIGHT / OtherRect RIGHT, Distance = " + minDistance);
+                            overlapedImageInfo.overlapedSide = OverlapedSide.RIGHT;
+                            imagesOverlapedMetaData.allImagesOverlapedOnRight.Add(fillImages[j].name, overlapedImageInfo);
                         }
                     }
                 }
             }
-           
-            imagesHavingsMetaData.Add(mainImage.name, imageHavingsMetaData);
+
+            imagesOverlapedMetaDatas.Add(mainImage.name, imagesOverlapedMetaData);
         }
     }
+
     Rect GetWorldRect(RectTransform rt)
     {
-        Vector3[] corners = new Vector3[4];
-        rt.GetWorldCorners(corners);
+        imageCorners = new Vector3[4];
+        rt.GetWorldCorners(imageCorners);
 
-        float width = corners[2].x - corners[0].x;
-        float height = corners[2].y - corners[0].y;
+        return new Rect(imageCorners[0].x, imageCorners[0].y, imageCorners[2].x - imageCorners[0].x, imageCorners[2].y - imageCorners[0].y);
+    }
 
-        return new Rect(corners[0].x, corners[0].y, width, height);
+    List <Vector3> GetEdgesPosition(RectTransform rt)
+    {
+        imageCorners = new Vector3[4];
+        rt.GetWorldCorners(imageCorners);
+
+        imageEdges = new List<Vector3>();
+        imageEdges.Add((imageCorners[0] + imageCorners[1]) / 2);
+        imageEdges.Add((imageCorners[2] + imageCorners[3]) / 2);
+
+        return imageEdges;
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        isOneAlreadyCompleted = false;
+        isFirstFilled = false;
         Image hitImage = GetImageUnderPointer(eventData);
         if (hitImage != null)
         {
@@ -119,8 +191,8 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
             currentRectTransform = currentImage.GetComponent<RectTransform>();
             isDragging = true;
             DetectFillDirection(eventData);
-            ImageToSetHavings = hitImage;
-            SetImageHavings(ImageToSetHavings);
+            imageBeingFilled = hitImage;
+            SetNextImagesToBeSelectedWhom(imageBeingFilled);
             UpdateFill(eventData);
         }
     }
@@ -135,52 +207,92 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         {
             if (!fillImages.Contains(hitImage)) return;
 
-            if(!nextToBeSelectedFormImages.Contains(hitImage) && isOneAlreadyCompleted) return;
+            if (!nextToBeSelectedFormImages.ContainsKey(hitImage.name) && isFirstFilled) return;
 
             if (currentImage.fillAmount >= 0.8f)
             {
                 currentImage.fillAmount = 1.0f;
-                isOneAlreadyCompleted = true;
-                Debug.Log("currentImage = "+currentImage);
-                ImageToSetHavings = currentImage;
-                SetImageHavings(ImageToSetHavings);
+                isFirstFilled = true;
+                imageBeingFilled = currentImage;
+                SetNextImagesToBeSelectedWhomDrag(imageBeingFilled);
+                //SetNextImagesToBeSelectedWhom(imageBeingFilled);
             }
             else
             {
                 currentImage.fillAmount = 0.0f;
             }
 
-            // Only allow switching if the flag is true
-            // if (canSelectNextImageToFill)
-            //  {
             currentImage = hitImage;
+            if (currentImage.fillOrigin == (int)Image.OriginHorizontal.Left)
+            {
+                fillFromLeft = true;
+            }
+            else 
+            {
+                fillFromLeft = false;
+            }
+      
             currentRectTransform = currentImage.GetComponent<RectTransform>();
-            DetectFillDirection(eventData);
-             //   canSelectNextImageToFill = false; // reset for the new image
-          //  }
+           // DetectFillDirection(eventData);
         }
 
         UpdateFill(eventData);
     }
 
-    private void SetImageHavings(Image imageToSetNext) 
+    private void SetNextImagesToBeSelectedWhom(Image imageToSetNext)
     {
-        nextToBeSelectedFormImages = new List<Image>();
+        nextToBeSelectedFormImages = new Dictionary<string, OverlapedImageInfo>();
         //To Right
-        if (fillFromLeft)
+        if (!fillFromLeft)
         {
-            nextToBeSelectedFormImages = imagesHavingsMetaData[imageToSetNext.name].allImagesOverlapedRight;
+            nextToBeSelectedFormImages = imagesOverlapedMetaDatas[imageToSetNext.name].allImagesOverlapedOnLeft;
         }
         //To Left
         else
         {
-            nextToBeSelectedFormImages = imagesHavingsMetaData[imageToSetNext.name].allImagesOverlapedLeft;
+            nextToBeSelectedFormImages = imagesOverlapedMetaDatas[imageToSetNext.name].allImagesOverlapedOnRight;
+        }
+        foreach (KeyValuePair<string, OverlapedImageInfo> kvp in nextToBeSelectedFormImages)
+        {
+            //textBox3.Text += ("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
+            Debug.Log("Next iamges = " + kvp.Key);
+        }
+    }
+
+    private void SetNextImagesToBeSelectedWhomDrag(Image imageToSetNext)
+    {
+        nextToBeSelectedFormImages = new Dictionary<string, OverlapedImageInfo>();
+        //To Right
+        if (!fillFromLeft)
+        {
+            nextToBeSelectedFormImages = imagesOverlapedMetaDatas[imageToSetNext.name].allImagesOverlapedOnLeft;
+        }
+        //To Left
+        else
+        {
+            nextToBeSelectedFormImages = imagesOverlapedMetaDatas[imageToSetNext.name].allImagesOverlapedOnRight;
         }
 
-        //foreach (Image image in nextToBeSelectedFormImages)
-        //{
-        //    Debug.Log("nextToBeSelectedFormImages "+image.name);
-        //}
+        for (int i = 0; i < fillImages.Count; i++) 
+        {
+            if (nextToBeSelectedFormImages.ContainsKey(fillImages[i].name))
+            {
+                if (nextToBeSelectedFormImages[fillImages[i].name].overlapedSide == OverlapedSide.LEFT)
+                {
+                    fillImages[i].fillOrigin = (int)Image.OriginHorizontal.Left;
+                }
+                else 
+                {
+                    fillImages[i].fillOrigin = (int)Image.OriginHorizontal.Right;
+                }
+               
+            }
+        }
+        foreach (KeyValuePair<string, OverlapedImageInfo> kvp in nextToBeSelectedFormImages)
+        {
+            //textBox3.Text += ("Key = {0}, Value = {1}", kvp.Key, kvp.Value);
+            Debug.Log("Next iamges = " + kvp.Key);
+        }
     }
 
 
@@ -257,23 +369,10 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
             if (currentImage.fillAmount >= 0.8f)
             {
-                ImageToSetHavings = currentImage;
-                SetImageHavings(ImageToSetHavings);
+                imageBeingFilled = currentImage;
+                SetNextImagesToBeSelectedWhomDrag(imageBeingFilled);
+                //SetNextImagesToBeSelectedWhom(imageBeingFilled);
             }
-            // Update the flag for switching
-            //canSelectNextImageToFill = currentImage.fillAmount >= 0.9f;
-
-            //if (canSelectNextImageToFill) 
-            //{
-            //    currentImage.fillAmount = 1.0f;
-            //    canSelectNextImageToFill = true;
-            //}
-
-            //if (currentImage.fillAmount >= 1.0f)
-            //{
-            //    currentImage.fillAmount = 1.0f;
-            //    canSelectNextImageToFill = true;
-            //}
         }
     }
 
@@ -290,11 +389,11 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         PuzzleSuccess();
     }
 
-    private float CombineFillAmout() 
+    private float CombineFillAmout()
     {
         float combineFillAmout = 0;
 
-        foreach (Image image in fillImages) 
+        foreach (Image image in fillImages)
         {
             combineFillAmout = combineFillAmout + image.fillAmount;
         }
@@ -305,7 +404,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
     private void PuzzleFail()
     {
-        if (UIManager.GetInstance().GameManager.IsVibrationOff == 0) 
+        if (UIManager.GetInstance().GameManager.IsVibrationOff == 0)
         {
             // Short vibration cross-platform
             Handheld.Vibrate();
@@ -328,16 +427,27 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
             UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>().LoadNextLevel();
     }
 
-    private void SetLevelCompletionBar() 
+    private void SetLevelCompletionBar()
     {
         if (UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>())
             UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>().SetLevelCompletionBar(CombineFillAmout());
     }
 
 
-    public class ImageHavingsMetaData
+    public class ImagesOverlapedMetaData
     {
-        public List<Image> allImagesOverlapedLeft = new List<Image>();
-        public List<Image> allImagesOverlapedRight = new List<Image>();
+        public Dictionary<string, OverlapedImageInfo> allImagesOverlapedOnLeft = new Dictionary<string, OverlapedImageInfo>();
+        public Dictionary<string, OverlapedImageInfo> allImagesOverlapedOnRight = new Dictionary<string, OverlapedImageInfo>();
+    }
+
+    public class OverlapedImageInfo
+    {
+        public OverlapedSide overlapedSide; // other image side
+    }
+
+    public enum OverlapedSide 
+    {
+        RIGHT,
+        LEFT,
     }
 }
