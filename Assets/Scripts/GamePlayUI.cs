@@ -12,6 +12,8 @@ public class GamePlayUI : MonoBehaviour
     private Slider levelCompletionBar;
     [SerializeField]
     private TextMeshProUGUI levelName;
+    [SerializeField] TextMeshProUGUI timerText;
+    float elapsedTime;
 
     private int currentLevel;
     private GameObject currentLevelObj;
@@ -19,6 +21,7 @@ public class GamePlayUI : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
+        //TimerManager.Instance?.StartTimer();
         LoadLevel();
     }
 
@@ -89,4 +92,13 @@ public class GamePlayUI : MonoBehaviour
     {
         AdManager.Instance.ShowRewardedAd(LoadNextLevel, OnAdNotReayYet);
     }
+
+    private void Update()
+    {
+            elapsedTime += Time.deltaTime;
+        int minutes = Mathf.FloorToInt(elapsedTime / 60F);
+            int seconds = Mathf.FloorToInt(elapsedTime - minutes * 60);
+            timerText.text = string.Format("{0:0}:{1:00}", minutes, seconds);
+    }
+
 }
