@@ -13,7 +13,8 @@ public class GamePlayUI : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI levelName;
     [SerializeField] TextMeshProUGUI timerText;
-    float elapsedTime;
+    private float elapsedTime;
+    private bool canStartTimer = false;
 
     private int currentLevel;
     private GameObject currentLevelObj;
@@ -47,6 +48,8 @@ public class GamePlayUI : MonoBehaviour
 
         SetLevelCompletionBar(0);
         SetLevelName();
+
+        StartTime();
     }
 
     private void SetLevelName() 
@@ -64,6 +67,11 @@ public class GamePlayUI : MonoBehaviour
     public void LoadNextLevel() 
     {
         UIManager.GetInstance().GameManager.CurerntLevel = UIManager.GetInstance().GameManager.CurerntLevel + 1;
+        Destroy(currentLevelObj);
+        LoadLevel();
+    }
+    public void ReplayLevel() 
+    {
         Destroy(currentLevelObj);
         LoadLevel();
     }
@@ -92,13 +100,30 @@ public class GamePlayUI : MonoBehaviour
     {
         AdManager.Instance.ShowRewardedAd(LoadNextLevel, OnAdNotReayYet);
     }
+    private void StartTime()
+        {
+        elapsedTime = 0f;
+        timerText.text = "0:00";
+        canStartTimer = true;
+    }
 
+    public void OnPuzzleSuccessfull()
+    {
+        //Debug.Log("Time taken to complete the level: " + elapsedTime + " seconds.");
+        UIManager.GetInstance().GameManager.LastLevelCompletionTime = elapsedTime.ToString();
+        //Debug.Log("Time taken to complete the level: " + UIManager.GetInstance().GameManager.LastLevelCompletionTime + " seconds.");
+        canStartTimer = false;
+    }
     private void Update()
     {
+        if (canStartTimer)
+        {
             elapsedTime += Time.deltaTime;
-        int minutes = Mathf.FloorToInt(elapsedTime / 60F);
+            int minutes = Mathf.FloorToInt(elapsedTime / 60F);
             int seconds = Mathf.FloorToInt(elapsedTime - minutes * 60);
             timerText.text = string.Format("{0:0}:{1:00}", minutes, seconds);
+        }
+           
     }
 
 }

@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt("isSoundOff", 0);
             PlayerPrefs.SetInt("currentLevel", 1);
             PlayerPrefs.SetInt("isVibrationOff", 0);
+            PlayerPrefs.SetString("lastLevelCompletionTime", string.Empty);
             //////////////////////
             PlayerPrefs.SetInt("isFirstRun", 1);
         }
@@ -57,7 +58,12 @@ public class GameManager : MonoBehaviour
     public int IsVibrationOff
     {
         get { return PlayerPrefs.GetInt("isVibrationOff", 0);}
-        set { PlayerPrefs.SetInt("isVibrationOff", 0); }
+        set { PlayerPrefs.SetInt("isVibrationOff", value); }
+    }
+    public string LastLevelCompletionTime
+    {
+        get { return PlayerPrefs.GetString("lastLevelCompletionTime", string.Empty); }
+        set { PlayerPrefs.SetString("lastLevelCompletionTime", value); }
     }
 
     public void GiveAndSaveDailyReward()
@@ -143,4 +149,6 @@ public class GameManager : MonoBehaviour
         //    OnProfileUpdated?.Invoke();
         //}
     }
+
+
 }
