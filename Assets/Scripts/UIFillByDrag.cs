@@ -12,39 +12,37 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
     private bool isDragging = false;
     private bool fillFromLeft = true;
 
-    private Dictionary<string, ImagesOverlapedMetaData> imagesOverlapedMetaDatas;
+    private Image mainImage;
 
-    private Rect mainImageRect;
-    private Rect otherImageRect;
+    private RectTransform mainImageRectTransform;
+    private RectTransform otherImageRectTransform;
+
+    private Dictionary<string, ImagesOverlapedMetaData> imagesOverlapedMetaDatas;
+    private Dictionary<string, OverlapedImageInfo> nextToBeSelectedFormImages;
 
     Vector3[] imageCorners;
     List <Vector3> imageEdges;
-    List<Vector3> mainImageEdges;
+    List <Vector3> mainImageEdges;
     Vector3 mainImageLeftEdge;
     Vector3 mainImageRightEdge;
     List<Vector3> otherImageEdges;
     Vector3 otherImageLeftEdge;
     Vector3 otherImageRightEdge;
 
-    private Image mainImage;
+
 
     float distanceMainRectLeftAndOtherRectLeft;
     float distanceMainRectLeftAndOtherRectRight;
     float distanceMainRectRightAndOtherRectLeft;
     float distanceMainRectRightAndOtherRectRight;
 
-    Dictionary<string, OverlapedImageInfo> nextToBeSelectedFormImages;
-   // private List<Image> nextToBeSelectedFormImages;
     private bool isFirstFilled;
     private Image imageBeingFilled;
-
-    // New variable to control image switching
-    //private bool canSelectNextImageToFill = false;
 
     void Start()
     {
         GetAllFillAbleImages();
-        ImageHavingSetup();
+        ImageOverlapingSetup();
     }
 
     private void GetAllFillAbleImages() 
@@ -69,7 +67,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         }
     }
 
-    private void ImageHavingSetup()
+    private void ImageOverlapingSetup()
     {
         imagesOverlapedMetaDatas = new Dictionary<string, ImagesOverlapedMetaData>();
 
@@ -80,34 +78,30 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
             imagesOverlapedMetaData.allImagesOverlapedOnRight = new Dictionary<string, OverlapedImageInfo>();
 
             mainImage = fillImages[i].GetComponent<Image>();
-            mainImageRect = GetWorldRect(mainImage.GetComponent<RectTransform>());
+            mainImageRectTransform = mainImage.GetComponent<RectTransform>();
 
             mainImageEdges = GetEdgesPosition(mainImage.GetComponent<RectTransform>());
             mainImageLeftEdge = mainImageEdges[0];
             mainImageRightEdge = mainImageEdges[1];
 
-          //  Debug.Log(mainImage.name + " mainRectLeftEdge = " + mainImageLeftEdge);
-          // Debug.Log(mainImage.name + " mainRectRightEdge = " + mainImageRightEdge);
 
             for (int j = 0; j < fillImages.Count; j++)
             {
                 if (fillImages[j].name != mainImage.name)
                 {
-                    otherImageRect = GetWorldRect(fillImages[j].GetComponent<RectTransform>());
-                    otherImageEdges = GetEdgesPosition(fillImages[j].GetComponent<RectTransform>());
+                    otherImageRectTransform = fillImages[j].GetComponent<RectTransform>();
 
-                    if (mainImageRect.Overlaps(otherImageRect, true))
+
+                    if (IsOverlaped(mainImageRectTransform, otherImageRectTransform))
                     {
                         Debug.Log(mainImage.name + " " + fillImages[j].name);
 
                         // Left Right overlaping Info storage
                         OverlapedImageInfo overlapedImageInfo = new OverlapedImageInfo();
 
+                        otherImageEdges = GetEdgesPosition(fillImages[j].GetComponent<RectTransform>());
                         otherImageLeftEdge = otherImageEdges[0];
                         otherImageRightEdge = otherImageEdges[1];
-
-                       // Debug.Log(fillImages[j].name +" otherRectLeftEdge = " + otherImageLeftEdge);
-                       // Debug.Log(fillImages[j].name +" otherRectRightEdge = " + otherImageRightEdge);
 
                         //mainLeft and otherleft distance
                         distanceMainRectLeftAndOtherRectLeft = Vector3.Distance(mainImageLeftEdge , otherImageLeftEdge);
@@ -128,28 +122,28 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
                         // If MainRectLeft And OtherRectLeft Overlaped
                         if (minDistance == distanceMainRectLeftAndOtherRectLeft)
                         {
-                            Debug.Log(fillImages[j].name + "Smallest: MainRect LEFT / OtherRect LEFT, Distance = " + minDistance);
+                            //Debug.Log(fillImages[j].name + "Smallest: MainRect LEFT / OtherRect LEFT, Distance = " + minDistance);
                             overlapedImageInfo.overlapedSide = OverlapedSide.LEFT;
                             imagesOverlapedMetaData.allImagesOverlapedOnLeft.Add(fillImages[j].name, overlapedImageInfo);
                         }
                         // If MainRectLeft And OtherRectRight Overlaped
                         else if (minDistance == distanceMainRectLeftAndOtherRectRight)
                         {
-                            Debug.Log(fillImages[j].name + "Smallest: MainRect LEFT / OtherRect RIGHT, Distance = " + minDistance);
+                            //Debug.Log(fillImages[j].name + "Smallest: MainRect LEFT / OtherRect RIGHT, Distance = " + minDistance);
                             overlapedImageInfo.overlapedSide = OverlapedSide.RIGHT;
                             imagesOverlapedMetaData.allImagesOverlapedOnLeft.Add(fillImages[j].name, overlapedImageInfo);
                         }
                         // If MainRectLeft And OtherRectLeft Overlaped
                         else if (minDistance == distanceMainRectRightAndOtherRectLeft)
                         {
-                            Debug.Log(fillImages[j].name + "Smallest: MainRect RIGHT / OtherRect LEFT, Distance = " + minDistance);
+                            //Debug.Log(fillImages[j].name + "Smallest: MainRect RIGHT / OtherRect LEFT, Distance = " + minDistance);
                             overlapedImageInfo.overlapedSide = OverlapedSide.LEFT;
                             imagesOverlapedMetaData.allImagesOverlapedOnRight.Add(fillImages[j].name, overlapedImageInfo);
                         }
                         // If MainRectLeft And OtherRectLeft Overlaped
                         else
                         {
-                            Debug.Log(fillImages[j].name + "Smallest: MainRect RIGHT / OtherRect RIGHT, Distance = " + minDistance);
+                            //Debug.Log(fillImages[j].name + "Smallest: MainRect RIGHT / OtherRect RIGHT, Distance = " + minDistance);
                             overlapedImageInfo.overlapedSide = OverlapedSide.RIGHT;
                             imagesOverlapedMetaData.allImagesOverlapedOnRight.Add(fillImages[j].name, overlapedImageInfo);
                         }
@@ -161,11 +155,67 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         }
     }
 
+    private Vector3[] GetWorldCornersArray(RectTransform rt)
+    {
+        imageCorners = new Vector3[4];
+        rt.GetWorldCorners(imageCorners);
+        return imageCorners;
+    }
+    // Polygon intersection test (Separating Axis Theorem)
+    private bool IsOverlaped(RectTransform a, RectTransform b)
+    {
+        return PolygonsIntersect(GetWorldCornersArray(a), GetWorldCornersArray(b));
+    }
+
+    private bool PolygonsIntersect(Vector3[] poly1, Vector3[] poly2)
+    {
+        return !(IsSeparated(poly1, poly2) || IsSeparated(poly2, poly1));
+    }
+
+    private bool IsSeparated(Vector3[] poly1, Vector3[] poly2)
+    {
+        for (int i = 0; i < poly1.Length; i++)
+        {
+            Vector2 p1 = poly1[i];
+            Vector2 p2 = poly1[(i + 1) % poly1.Length];
+
+            // Get axis perpendicular to edge
+            Vector2 axis = new Vector2(-(p2.y - p1.y), p2.x - p1.x).normalized;
+
+            // Project both polygons onto axis
+            ProjectPolygon(axis, poly1, out float min1, out float max1);
+            ProjectPolygon(axis, poly2, out float min2, out float max2);
+
+            // If no overlap -> polygons don’t intersect
+            if (max1 < min2 || max2 < min1)
+                return true;
+        }
+        return false;
+    }
+
+    private void ProjectPolygon(Vector2 axis, Vector3[] poly, out float min, out float max)
+    {
+        float dot = Vector2.Dot(axis, poly[0]);
+        min = max = dot;
+
+        for (int i = 1; i < poly.Length; i++)
+        {
+            dot = Vector2.Dot(axis, poly[i]);
+            if (dot < min) min = dot;
+            if (dot > max) max = dot;
+        }
+    }
+
     Rect GetWorldRect(RectTransform rt)
     {
         imageCorners = new Vector3[4];
         rt.GetWorldCorners(imageCorners);
-
+        //for (var i = 0; i < 4; i++)
+        //{
+        //    Debug.Log(this.transform.name + " World Corner " + i + " : " + imageCorners[i]);
+        //}
+        //Debug.Log(imageCorners[2].x - imageCorners[0].x);
+        //Debug.Log(imageCorners[2].y - imageCorners[0].y);
         return new Rect(imageCorners[0].x, imageCorners[0].y, imageCorners[2].x - imageCorners[0].x, imageCorners[2].y - imageCorners[0].y);
     }
 
@@ -295,7 +345,6 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         }
     }
 
-
     public void OnPointerUp(PointerEventData eventData)
     {
         isDragging = false;
@@ -418,7 +467,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
     private void PuzzleSuccess()
     {
-        LoadNextLevel();
+       // LoadNextLevel();
     }
 
     private void LoadNextLevel()
