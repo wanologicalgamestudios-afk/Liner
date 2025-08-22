@@ -467,7 +467,8 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
     private void PuzzleSuccess()
     {
-       // LoadNextLevel();
+        UIManager.GetInstance().SpawnNextPanel("LevelCompleteUI", true);
+        // LoadNextLevel();
     }
 
     private void LoadNextLevel()
