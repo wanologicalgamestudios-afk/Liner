@@ -48,7 +48,6 @@ public class GamePlayUI : MonoBehaviour
 
         SetLevelCompletionBar(0);
         SetLevelName();
-
         StartTime();
     }
 
@@ -87,21 +86,25 @@ public class GamePlayUI : MonoBehaviour
 
     public void HowToPlayButtonCall()
     {
+        UIManager.GetInstance().SoundManager.PlayButton();
         UIManager.GetInstance().SpawnNextPanel(nameof(HowToPlayUI),true);
     }
 
     public void SettingsButtonCall() 
     {
+        UIManager.GetInstance().SoundManager.PlayButton();
         UIManager.GetInstance().SpawnNextPanel(nameof(SettingsUI), false);
     }
 
     public void HintButtonCall() 
     {
+        UIManager.GetInstance().SoundManager.PlayButton();
         AdManager.Instance.ShowRewardedAd(ShowHint, OnAdNotReadyYet);
     }
 
     public void SkipPuzzleButtonCall() 
     {
+        UIManager.GetInstance().SoundManager.PlayButton();
         AdManager.Instance.ShowRewardedAd(LoadNextLevel, OnAdNotReadyYet);
     }
 
@@ -112,12 +115,37 @@ public class GamePlayUI : MonoBehaviour
         canStartTimer = true;
     }
 
+    private void Viberate()
+    {
+        if (UIManager.GetInstance().GameManager.IsVibrationOff == 0)
+        {
+            // Short vibration cross-platform
+            Handheld.Vibrate();
+        }
+    }
+
+    private void PlayLevelFailSound()
+    {
+        UIManager.GetInstance().SoundManager.PlayLevelFail();
+    }
+
+    private void PlayLevelSuccessfullSound()
+    {
+        UIManager.GetInstance().SoundManager.PlayLevelDone();
+    }
+
+    public void OnLevelFail() 
+    {
+        PlayLevelFailSound();
+        Viberate();
+    }
+
     public void OnPuzzleSuccessfull()
     {
-        //Debug.Log("Time taken to complete the level: " + elapsedTime + " seconds.");
+        PlayLevelSuccessfullSound();
         UIManager.GetInstance().GameManager.LastLevelCompletionTime = elapsedTime.ToString();
-        //Debug.Log("Time taken to complete the level: " + UIManager.GetInstance().GameManager.LastLevelCompletionTime + " seconds.");
         canStartTimer = false;
+        UIManager.GetInstance().SpawnNextPanel(nameof(LevelDoneUI), false);
     }
 
     private void Update()

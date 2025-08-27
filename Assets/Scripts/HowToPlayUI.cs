@@ -10,6 +10,7 @@ public class HowToPlayUI : MonoBehaviour
 
     public void GotitButtonCall() 
     {
+        UIManager.GetInstance().SoundManager.PlayButton();
         UIManager.GetInstance().SpawnNextPanel(nameof(GamePlayUI), true);
     }
 }

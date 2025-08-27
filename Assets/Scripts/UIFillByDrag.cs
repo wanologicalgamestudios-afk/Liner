@@ -458,20 +458,6 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         return combineFillAmout;
     }
 
-    private void Viberate()
-    {
-        if (UIManager.GetInstance().GameManager.IsVibrationOff == 0)
-        {
-            // Short vibration cross-platform
-            Handheld.Vibrate();
-        }
-    }
-
-    private void PlayLevelFailSound() 
-    {
-        UIManager.GetInstance().SoundManager.PlayLevelFail();
-    }
-
     private void RedAllImages()
     {
         foreach (Image image in fillImages)
@@ -503,12 +489,10 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         Invoke(nameof(RestartLevelOnFailLevel), 1.0f);
     }
 
-
-
     private void PuzzleFail()
     {
-        Viberate();
-        PlayLevelFailSound();
+        if (UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>())
+            UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>().OnLevelFail();
         RedAllImages();
         ActiveLevelFailUI();
     }
@@ -517,8 +501,6 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
     {
         if (UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>())
             UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>().OnPuzzleSuccessfull();
-        UIManager.GetInstance().SpawnNextPanel(nameof(LevelDoneUI), false);
-        // LoadNextLevel();
     }
 
     private void SetLevelCompletionBar()
