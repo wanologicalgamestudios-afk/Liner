@@ -497,7 +497,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
     private void ActiveLevelFailUI()
     {
-        // UIManager.GetInstance().SpawnNextPanel(nameof(HomeUI),false);
+        UIManager.GetInstance().SpawnNextPanel(nameof(LevelFailUI),false);
         Invoke(nameof(RestartLevelOnFailLevel), 1.0f);
     }
 
