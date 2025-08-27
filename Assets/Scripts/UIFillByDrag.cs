@@ -458,18 +458,34 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         return combineFillAmout;
     }
 
-    private void PuzzleFail()
+    private void Viberate()
     {
         if (UIManager.GetInstance().GameManager.IsVibrationOff == 0)
         {
             // Short vibration cross-platform
             Handheld.Vibrate();
         }
+    }
+
+
+    private void PlayLevelFailSound() 
+    {
+        UIManager.GetInstance().SoundManager.PlayLevelFail();
+    }
+    private void RedAllImages()
+    {
         foreach (Image image in fillImages)
         {
-            image.fillAmount = 0;
+            image.color = Color.red;
         }
-        SetLevelCompletionBar();
+    }
+
+    private void PuzzleFail()
+    {
+        Viberate();
+        PlayLevelFailSound();
+        RedAllImages();
+       // ResetAllImages();
     }
 
     private void PuzzleSuccess()
