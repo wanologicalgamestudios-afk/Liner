@@ -26,10 +26,30 @@ public class SettingsUI : MonoBehaviour
         {
             vibrationToggle.isOn = false;
         }
+
+        if (UIManager.GetInstance().GameManager.IsMusicOff == 1)
+        {
+            musicToggle.isOn = true;
+        }
+        else
+        {
+            musicToggle.isOn = false;
+        }
+
+        if (UIManager.GetInstance().GameManager.IsSoundOff == 1)
+        {
+            soundToggle.isOn = true;
+        }
+        else
+        {
+            soundToggle.isOn = false;
+        }
+
     }
 
     public void CrossButtonCall() 
     {
+        UIManager.GetInstance().SoundManager.PlayButton();
         UIManager.GetInstance().BackButtonIsPressed();
     }
 
@@ -37,20 +57,27 @@ public class SettingsUI : MonoBehaviour
     {
         if (_musicToggle.isOn)
         {
+            UIManager.GetInstance().GameManager.IsMusicOff = 1; 
         }
         else 
         {
+            UIManager.GetInstance().GameManager.IsMusicOff = 0;
         }
+
+        UIManager.GetInstance().SoundManager.PlayButton();
     }
 
     public void SoundButtonCall(Toggle _soundToggle)
     {
         if (_soundToggle.isOn)
         {
+            UIManager.GetInstance().GameManager.IsSoundOff = 1;
         }
         else
         {
+            UIManager.GetInstance().GameManager.IsSoundOff = 0;
         }
+        UIManager.GetInstance().SoundManager.PlayButton();
     }
 
     public void VibrationButtonCall(Toggle _viberationToggle)
@@ -63,5 +90,6 @@ public class SettingsUI : MonoBehaviour
         {
             UIManager.GetInstance().GameManager.IsVibrationOff = 0;
         }
+        UIManager.GetInstance().SoundManager.PlayButton();
     }
 }

@@ -16,6 +16,12 @@ public class LevelCompleteUI : MonoBehaviour
     void Start()
     {
         SetUiOnStart();
+        PlayLevelSuccessfullSound();
+    }
+
+    private void PlayLevelSuccessfullSound()
+    {
+        UIManager.GetInstance().SoundManager.PlayConfetti();
     }
     private void SetUiOnStart()
     {
