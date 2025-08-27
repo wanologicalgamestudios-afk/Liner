@@ -29,6 +29,16 @@ public class AutoImageFiller : MonoBehaviour
         StartCoroutine(FillImagesSequentially());
         Invoke(nameof(ResetAllFills), totalDuration + 1);
     }
+
+    public void FillForCompleteLevelScreen()
+    {
+        foreach (var img in fillImages)
+        {
+            if (img != null)
+                img.fillAmount = 1f;
+        }
+        layer.enabled = false;
+    }
     private void ResetAllFills()
     {
         foreach (var img in fillImages)
