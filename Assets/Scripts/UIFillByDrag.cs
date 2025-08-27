@@ -487,6 +487,8 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
             image.fillAmount = 0.0f;
             image.color = Color.white;
         }
+        if (UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>())
+            UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>().SetLevelCompletionBar(0.0f);
     }
 
     private void RestartLevelOnFailLevel() 
