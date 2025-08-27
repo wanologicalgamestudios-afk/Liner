@@ -467,11 +467,11 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         }
     }
 
-
     private void PlayLevelFailSound() 
     {
         UIManager.GetInstance().SoundManager.PlayLevelFail();
     }
+
     private void RedAllImages()
     {
         foreach (Image image in fillImages)
@@ -480,12 +480,35 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         }
     }
 
+    private void ResetAllImages()
+    {
+        foreach (Image image in fillImages)
+        {
+            image.fillAmount = 0.0f;
+            image.color = Color.white;
+        }
+    }
+
+    private void RestartLevelOnFailLevel() 
+    {
+        UIManager.GetInstance().BackButtonIsPressed();
+        ResetAllImages();
+    }
+
+    private void ActiveLevelFailUI()
+    {
+        // UIManager.GetInstance().SpawnNextPanel(nameof(HomeUI),false);
+        Invoke(nameof(RestartLevelOnFailLevel), 1.0f);
+    }
+
+
+
     private void PuzzleFail()
     {
         Viberate();
         PlayLevelFailSound();
         RedAllImages();
-       // ResetAllImages();
+        ActiveLevelFailUI();
     }
 
     private void PuzzleSuccess()
