@@ -1,148 +1,91 @@
 using UnityEngine;
 using System.Collections;
-/*
- * This is SoundManager
- * In other script, you just need to call SoundManager.PlaySfx(AudioClip) to play the sound
-*/
+
+/// <summary>
+/// Centralized Sound Manager
+/// Usage:
+///     SoundManager.Instance.PlaySfx(clip);
+///     SoundManager.Instance.PlayMusic(customClip, loop: true);
+/// </summary>
 public class SoundManager : MonoBehaviour
 {
-	[SerializeField]
-	private AudioSource backgroundAudioSource;
-	[SerializeField]
-	private AudioSource effectAudioSource;
-	[SerializeField]
-	private AudioClip backgroundSound;
-	[SerializeField]
-	private AudioClip levelFailSound;
-	
-	public static bool isSound = true;
-	public static bool isMusic = true;
+    [Header("Audio Sources")]
+    [SerializeField] private AudioSource backgroundAudioSource;
+    [SerializeField] private AudioSource effectAudioSource;
 
-	// Use this for initialization
-	void Awake()
-	{
+    [Header("Clips")]
+    [SerializeField] private AudioClip backgroundSound;
+    [SerializeField] private AudioClip levelFailSound;
+    [SerializeField] private AudioClip levelDoneSound;
+    [SerializeField] private AudioClip levelCompleteUIConfettiSound;
 
-	}
-	//void Start()
-	//{
- //       //Check auido and sound
+    public static bool isSound = true;
+    public static bool isMusic = true;
 
- //       if (SavedMusicVolume > 0f)
- //           isMusic = true;
- //       else
- //           isMusic = false;
 
- //       if (SavedSfxVolume > 0f)
- //           isSound = true;
- //       else
- //           isSound = false;
+    private void Start()
+    {
+        if (backgroundSound != null)
+            PlayMusic(backgroundSound, true);
+    }
 
- //       //Check auido and sound
- //       PlayMusic(musicsGame, MusicVolume);
- //   }
+    #region Public Functions
 
-	//public static void Click()
-	//{
-	//	PlaySfx(Instance.soundClick);
-	//}
+    /// <summary>
+    /// Play a one-shot sound effect.
+    /// </summary>
+    public void PlaySfx(AudioClip clip)
+    {
+        if (clip == null || !isSound) return;
+        effectAudioSource.PlayOneShot(clip);
+    }
 
-	//public void ClickBut()
-	//{
-	//	PlaySfx(soundClick);
-	//}
+    /// <summary>
+    /// Play background music (loop optional).
+    /// </summary>
+    public void PlayMusic(AudioClip clip, bool loop = true)
+    {
+        if (clip == null || !isMusic) return;
 
-	//public static void PlaySfx(AudioClip clip)
-	//{
-	//	if (Instance != null)
-	//	{
-	//		Instance.PlaySound(clip, Instance.soundFx);
-	//	}
-	//}
+        backgroundAudioSource.clip = clip;
+        backgroundAudioSource.loop = loop;
+        backgroundAudioSource.Play();
+    }
 
-	//public static void PlaySfx(AudioClip clip, float volume)
-	//{
-	//	if (Instance != null)
-	//		Instance.PlaySound(clip, Instance.soundFx, volume);
-	//}
+    /// <summary>
+    /// Stop background music.
+    /// </summary>
+    public void StopMusic()
+    {
+        backgroundAudioSource.Stop();
+    }
 
-	//public static void PlaySfx(AudioClip[] clips)
-	//{
-	//	if (Instance != null && clips.Length > 0)
-	//		Instance.PlaySound(clips[Random.Range(0, clips.Length)], Instance.soundFx);
-	//}
+    /// <summary>
+    /// Toggle SFX On/Off.
+    /// </summary>
+    public void ToggleSound(bool enable)
+    {
+        isSound = enable;
+    }
 
-	//public static void PlaySfx(AudioClip[] clips, float volume)
-	//{
-	//	if (Instance != null && clips.Length > 0)
-	//		Instance.PlaySound(clips[Random.Range(0, clips.Length)], Instance.soundFx, volume);
-	//}
+    /// <summary>
+    /// Toggle Music On/Off.
+    /// </summary>
+    public void ToggleMusic(bool enable)
+    {
+        isMusic = enable;
 
-	//public static void PlayMusic(AudioClip clip)
-	//{
-	//	Instance.PlaySound(clip, Instance.musicAudio);
-	//}
+        if (!isMusic && backgroundAudioSource.isPlaying)
+            backgroundAudioSource.Stop();
+        else if (isMusic && !backgroundAudioSource.isPlaying && backgroundSound != null)
+            PlayMusic(backgroundSound, true);
+    }
 
-	//public static void PlayMusic(AudioClip clip, float volume)
-	//{
-	//	Instance.PlaySound(clip, Instance.musicAudio, volume);
-	//}
+    #endregion
 
-	//public static float SavedMusicVolume
-	//{
-	//	get { return PlayerPrefs.GetFloat("Music Volume", 0.5f); }
-	//	set
-	//	{
-	//		PlayerPrefs.SetFloat("Music Volume", value);
-	//	}
-	//}
-	//public static float SavedSfxVolume
-	//{
-	//	get { return PlayerPrefs.GetFloat("Sfx Volume", 1f); }
-	//	set
-	//	{
-	//		PlayerPrefs.SetFloat("Sfx Volume", value);
-	//	}
-	//}
-
-	//private void PlaySound(AudioClip clip, AudioSource audioOut)
-	//{
-	//	if (clip == null)
-	//	{
-	//		//			Debug.Log ("There are no audio file to play", gameObject);
-	//		return;
-	//	}
-
-	//	if (Instance == null)
-	//		return;
-
-	//	if (audioOut == musicAudio)
-	//	{
-	//		audioOut.clip = clip;
-	//		audioOut.Play();
-	//	}
-	//	else
-	//		audioOut.PlayOneShot(clip, SoundVolume);
-	//}
-
-	//private void PlaySound(AudioClip clip, AudioSource audioOut, float volume)
-	//{
-	//	if (clip == null)
-	//	{
-	//		//			Debug.Log ("There are no audio file to play", gameObject);
-	//		return;
-	//	}
-
-	//	if (audioOut == musicAudio)
-	//	{
-	//		//if (!GlobalValue.isMusic) return;
-	//		//audioOut.volume = GlobalValue.isMusic ? volume : 0;
-	//		audioOut.clip = clip;
-	//		audioOut.Play();
-	//	}
-	//	else
-	//	{
-	//		//if (!GlobalValue.isSound) return;
-	//		audioOut.PlayOneShot(clip, SoundVolume * volume);
-	//	}
-	//}
+    #region Helper Wrappers for Common Sounds
+    public void PlayLevelFail() => PlaySfx(levelFailSound);
+    public void PlayLevelDone() => PlaySfx(levelDoneSound);
+    public void PlayConfetti() => PlaySfx(levelCompleteUIConfettiSound);
+    #endregion
 }

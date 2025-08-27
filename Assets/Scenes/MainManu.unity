@@ -591,7 +591,9 @@ MonoBehaviour:
   backgroundAudioSource: {fileID: 373873364}
   effectAudioSource: {fileID: 373873363}
   backgroundSound: {fileID: 0}
-  warrningSound: {fileID: 0}
+  levelFailSound: {fileID: 8300000, guid: 3ac758166b6b1d9468bc1d46dd43ca61, type: 3}
+  levelDoneSound: {fileID: 0}
+  levelCompleteUIConfettiSound: {fileID: 0}
 --- !u!4 &373873366
 Transform:
   m_ObjectHideFlags: 0
@@ -860,6 +862,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameManager: {fileID: 334430270}
+  soundManager: {fileID: 373873365}
   warningsPanelUI: {fileID: 1876529581}
   allPanelPathInResourcesFolder: Menus/
   isShowingAds: 0

@@ -13,6 +13,8 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private GameManager gameManager;
     [SerializeField]
+    private SoundManager soundManager;
+    [SerializeField]
     private WarningsPanelUI warningsPanelUI;
     [SerializeField]
     private string allPanelPathInResourcesFolder = "Menus/";
@@ -26,6 +28,7 @@ public class UIManager : MonoBehaviour
     private float transitionTime;
 
     public GameManager GameManager => gameManager;
+    public SoundManager SoundManager => soundManager;
 
     private string panelName;
 

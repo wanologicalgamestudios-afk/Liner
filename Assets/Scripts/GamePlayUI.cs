@@ -56,20 +56,24 @@ public class GamePlayUI : MonoBehaviour
     {
         levelName.text = "Level " + currentLevel;
     }
+
     private void ShowHint() 
     {
         autoImageFiller.PlayHint();
     }
-    private void OnAdNotReayYet() 
+
+    private void OnAdNotReadyYet() 
     {
         UIManager.GetInstance().ActiveMessagePanel("Ad is not ready yet.");
     }
+
     public void LoadNextLevel() 
     {
         UIManager.GetInstance().GameManager.CurerntLevel = UIManager.GetInstance().GameManager.CurerntLevel + 1;
         Destroy(currentLevelObj);
         LoadLevel();
     }
+
     public void ReplayLevel() 
     {
         Destroy(currentLevelObj);
@@ -93,13 +97,14 @@ public class GamePlayUI : MonoBehaviour
 
     public void HintButtonCall() 
     {
-        AdManager.Instance.ShowRewardedAd(ShowHint, OnAdNotReayYet);
+        AdManager.Instance.ShowRewardedAd(ShowHint, OnAdNotReadyYet);
     }
 
     public void SkipPuzzleButtonCall() 
     {
-        AdManager.Instance.ShowRewardedAd(LoadNextLevel, OnAdNotReayYet);
+        AdManager.Instance.ShowRewardedAd(LoadNextLevel, OnAdNotReadyYet);
     }
+
     private void StartTime()
         {
         elapsedTime = 0f;
@@ -114,6 +119,7 @@ public class GamePlayUI : MonoBehaviour
         //Debug.Log("Time taken to complete the level: " + UIManager.GetInstance().GameManager.LastLevelCompletionTime + " seconds.");
         canStartTimer = false;
     }
+
     private void Update()
     {
         if (canStartTimer)
