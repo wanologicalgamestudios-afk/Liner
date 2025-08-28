@@ -26,6 +26,8 @@ public class GamePlayUI : MonoBehaviour
         LoadLevel();
     }
 
+
+
     private void LoadLevel() 
     {
         currentLevel = UIManager.GetInstance().GameManager.CurerntLevel;
@@ -48,7 +50,17 @@ public class GamePlayUI : MonoBehaviour
 
         SetLevelCompletionBar(0);
         SetLevelName();
-        StartTime();
+
+
+        if (UIManager.GetInstance().GameManager.CurerntLevel % 10 == 0)
+        {
+            UIManager.GetInstance().SpawnNextPanel(nameof(BossLevelNotificationUI), false);
+            Invoke(nameof(StartTime), 1.5f);
+        }
+        else 
+        {
+            StartTime();
+        }
     }
 
     private void SetLevelName() 
