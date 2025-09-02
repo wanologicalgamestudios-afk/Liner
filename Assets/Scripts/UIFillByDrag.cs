@@ -295,6 +295,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
             SetNextImagesToBeSelectedWhomOnDrag(imageBeingFilled);
 
             offDrageNextImage = null;
+
             foreach (string key in nextToBeSelectedFromImages.Keys)
             {
                 if (fillImages.Find(img => img.name == key).fillAmount != 1)
