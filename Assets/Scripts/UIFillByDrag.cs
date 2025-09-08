@@ -37,6 +37,8 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
     private bool isFirstFilled;
     private Image imageBeingFilled;
+    private int unfilledImagesCount;
+    private Image unfilledImageForCheck;
 
     void Start()
     {
@@ -458,14 +460,35 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
     private void CheckPuzzleStatus()
     {
-        foreach (Image image in fillImages)
+        unfilledImagesCount = 0;
+        for (int i = 0; i < fillImages.Count; i++) 
         {
-            if (image.fillAmount < 1f)
+            if (fillImages[i].fillAmount < 1)
+            {
+                unfilledImagesCount++;
+                // To Store last unfilled image.
+                unfilledImageForCheck = fillImages[i];
+            }
+        }
+
+        if (unfilledImagesCount > 0) 
+        {
+            if (unfilledImagesCount > 1 || unfilledImageForCheck.fillAmount < 0.6)
             {
                 PuzzleFail();
                 return;
             }
         }
+       
+
+        //foreach (Image image in fillImages)
+        //{
+        //    if (image.fillAmount < 1f)
+        //    {
+        //        PuzzleFail();
+        //        return;
+        //    }
+        //}
         PuzzleSuccess();
     }
 
