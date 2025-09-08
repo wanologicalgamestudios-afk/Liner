@@ -473,7 +473,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
         if (unfilledImagesCount > 0) 
         {
-            if (unfilledImagesCount > 1 || unfilledImageForCheck.fillAmount < 0.6)
+            if (unfilledImagesCount > 1 || unfilledImageForCheck.fillAmount < 0.7)
             {
                 PuzzleFail();
                 return;
