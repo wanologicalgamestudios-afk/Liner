@@ -410,18 +410,56 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
             //Debug.Log("Next iamges = " + kvp.Key);
         }
     }
- 
+
     private Image GetImageUnderPointer(PointerEventData eventData)
     {
+        // List of candidates within finger area
+        List<Image> candidates = new List<Image>();
+
         foreach (Image img in fillImages)
         {
-            if (RectTransformUtility.RectangleContainsScreenPoint(img.rectTransform, eventData.position, eventData.pressEventCamera))
+            // Use an expanded hit box — makes touch feel smoother
+            RectTransform rt = img.rectTransform;
+            Rect rect = rt.rect;
+            rect.xMin -= 20f; // expand touch area (tune if needed)
+            rect.xMax += 20f;
+            rect.yMin -= 20f;
+            rect.yMax += 20f;
+
+            Vector2 localPoint;
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(rt, eventData.position, eventData.pressEventCamera, out localPoint))
             {
-                return img;
+                if (rect.Contains(localPoint))
+                {
+                    candidates.Add(img);
+                }
             }
         }
-        return null;
+
+        if (candidates.Count == 0) return null;
+        if (candidates.Count == 1) return candidates[0];
+
+        // Choose the closest to the current image (smoother transitions)
+        Image best = candidates[0];
+        float bestDist = float.MaxValue;
+
+        if (currentImage != null)
+        {
+            Vector3 currentCenter = currentImage.rectTransform.position;
+            foreach (Image img in candidates)
+            {
+                float dist = Vector3.Distance(currentCenter, img.rectTransform.position);
+                if (dist < bestDist)
+                {
+                    best = img;
+                    bestDist = dist;
+                }
+            }
+        }
+
+        return best;
     }
+
 
     private void DetectFillDirectionGeneral(PointerEventData eventData)
     {
