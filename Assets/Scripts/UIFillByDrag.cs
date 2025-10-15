@@ -1,7 +1,8 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
+﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
@@ -42,11 +43,15 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
     private Vector2 lastPointerPosition;
 
+    private GameObject drawingToShake;
+
 
     void Start()
     {
         GetAllFillAbleImages();
         ImageOverlapingSetup();
+
+        
     }
 
     private void GetAllFillAbleImages() 
@@ -535,7 +540,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
                 return;
             }
         }
-       
+
 
         //foreach (Image image in fillImages)
         //{
@@ -545,6 +550,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         //        return;
         //    }
         //}
+        GreenAllImages();
         PuzzleSuccess();
     }
 
@@ -566,6 +572,14 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         foreach (Image image in fillImages)
         {
             image.color = Color.red;
+        }
+    }
+
+    private void GreenAllImages()
+    {
+        foreach (Image image in fillImages)
+        {
+            image.color = Color.green;
         }
     }
 
@@ -597,6 +611,10 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         if (UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>())
             UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>().OnLevelFail();
         RedAllImages();
+
+        drawingToShake = GameObject.Find("Middle");
+        StartCoroutine(ShakeObject(drawingToShake, 1f, 5f)); // 1 sec shake, low intensity
+
         ActiveLevelFailUI();
     }
 
@@ -611,12 +629,39 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
         if (UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>())
             UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>().SetLevelCompletionBar(CombineFillAmout());
     }
+
+    IEnumerator ShakeObject(GameObject target, float duration = 1f, float magnitude = 5f)
+    {
+        if (target == null) yield break;
+
+        RectTransform rectTransform = target.GetComponent<RectTransform>();
+        Vector3 originalPos = rectTransform.anchoredPosition;
+
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            float offsetX = Random.Range(-1f, 1f) * magnitude;
+            float offsetY = Random.Range(-1f, 1f) * magnitude;
+
+            rectTransform.anchoredPosition = originalPos + new Vector3(offsetX, offsetY, 0f);
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        rectTransform.anchoredPosition = originalPos;
+    }
+
+
 }
 public class ImagesOverlapedMetaData
 {
     public Dictionary<string, OverlapedImageInfo> allImagesOverlapedOnLeft = new Dictionary<string, OverlapedImageInfo>();
     public Dictionary<string, OverlapedImageInfo> allImagesOverlapedOnRight = new Dictionary<string, OverlapedImageInfo>();
 }
+
+
 
 public class OverlapedImageInfo
 {

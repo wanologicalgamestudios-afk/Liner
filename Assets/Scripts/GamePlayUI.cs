@@ -65,7 +65,7 @@ public class GamePlayUI : MonoBehaviour
 
     private void SetLevelName() 
     {
-        levelName.text = "Level " + currentLevel;
+        levelName.text = "LEVEL " + currentLevel;
     }
 
     private void ShowHint() 
