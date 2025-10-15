@@ -40,6 +40,9 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
     private int unfilledImagesCount;
     private Image unfilledImageForCheck;
 
+    private Vector2 lastPointerPosition;
+
+
     void Start()
     {
         GetAllFillAbleImages();
@@ -235,6 +238,8 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        lastPointerPosition = eventData.position;
+
         isFirstFilled = false;
         Image hitImage = GetImageUnderPointer(eventData);
         if (hitImage != null)
@@ -258,7 +263,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
         if (currentImage.fillAmount < 1)
         {
-            if (fillImages.Contains(hitImage) && hitImage != currentImage && hitImage.fillAmount != 1) 
+            if (fillImages.Contains(hitImage) && hitImage != currentImage && hitImage.fillAmount != 1)
             {
                 if (currentImage.fillAmount >= 0.6f)
                 {
@@ -271,7 +276,6 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
                 {
                     currentImage.fillAmount = 0.0f;
                 }
-           
 
                 if (!nextToBeSelectedFromImages.ContainsKey(hitImage.name) && isFirstFilled) return;
 
@@ -282,10 +286,11 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
                 {
                     DetectFillDirectionGeneral(eventData);
                 }
-                else 
+                else
                 {
                     DetectFillDirectionNormal();
                 }
+
                 currentRectTransform = currentImage.GetComponent<RectTransform>();
             }
         }
@@ -296,19 +301,31 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
             imageBeingFilled = currentImage;
             SetNextImagesToBeSelectedWhomOnDrag(imageBeingFilled);
 
-            offDrageNextImage = null;
+            // Direction-aware selection logic starts here
+            Vector2 dragVector = (eventData.position - lastPointerPosition).normalized;
+            lastPointerPosition = eventData.position;
 
-            foreach (string key in nextToBeSelectedFromImages.Keys)
+            Image bestCandidate = null;
+            float bestScore = float.MinValue;
+
+            foreach (var kvp in nextToBeSelectedFromImages)
             {
-                if (fillImages.Find(img => img.name == key).fillAmount != 1)
+                Image candidate = fillImages.Find(img => img.name == kvp.Key);
+                if (candidate == null || candidate.fillAmount == 1) continue;
+
+                Vector2 toCandidate = (Vector2)(candidate.rectTransform.position - currentImage.rectTransform.position).normalized;
+                float score = Vector2.Dot(dragVector, toCandidate);
+
+                if (score > bestScore)
                 {
-                    offDrageNextImage = fillImages.Find(img => img.name == key);
-                    break;
+                    bestScore = score;
+                    bestCandidate = candidate;
                 }
             }
-            if (offDrageNextImage == null) return;
 
-            currentImage = offDrageNextImage;
+            if (bestCandidate == null) return;
+
+            currentImage = bestCandidate;
             currentImage.transform.SetAsFirstSibling();
             DetectFillDirectionNormal();
             currentRectTransform = currentImage.GetComponent<RectTransform>();
@@ -316,6 +333,7 @@ public class UIFillMultiImagesByDrag : MonoBehaviour, IPointerDownHandler, IDrag
 
         UpdateFill(eventData);
     }
+
 
     private void UpdateFill(PointerEventData eventData)
     {
