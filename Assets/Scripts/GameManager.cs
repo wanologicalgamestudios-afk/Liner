@@ -1,186 +1,94 @@
-
 using System;
-using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
-
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Testing Settings")]
+    [Tooltip("Enable this if you want to play a specific level for testing.")]
+    public bool overrideLevelForTesting = false;
+
+    [Tooltip("The level to load if override is enabled.")]
+    public int testLevel = 1;
+
     private void Awake()
     {
         SetPlayerPrefsOnVeryFirstRun();
+
+        // Allow manual override for testing
+        if (overrideLevelForTesting)
+        {
+            Debug.Log($"[GameManager] Overriding current level for testing: Level {testLevel}");
+            CurerntLevel = testLevel;
+        }
     }
+
     private void SetPlayerPrefsOnVeryFirstRun()
     {
         if (PlayerPrefs.GetInt("isFirstRun") == 0)
         {
-            // Settings
+            // Default settings
             PlayerPrefs.SetInt("isFirstTimeHowToPlayShown", 0);
             PlayerPrefs.SetInt("isSoundOff", 0);
             PlayerPrefs.SetInt("currentLevel", 1);
             PlayerPrefs.SetInt("isVibrationOff", 0);
             PlayerPrefs.SetInt("isMusicOff", 0);
             PlayerPrefs.SetString("lastLevelCompletionTime", string.Empty);
-            //////////////////////
             PlayerPrefs.SetInt("isFirstRun", 1);
         }
     }
 
     public bool IsInternetAvailable()
     {
-        bool isInternetAvailable;
-        if (Application.internetReachability == NetworkReachability.NotReachable)
-        {
-            isInternetAvailable = false;
-        }
-        else
-        {
-            isInternetAvailable = true;
-        }
-
-        return isInternetAvailable;
+        return Application.internetReachability != NetworkReachability.NotReachable;
     }
+
     public string AuthenticationToken
     {
-        get { return PlayerPrefs.GetString("authToken"); }
-        set { PlayerPrefs.SetString("authToken", value); }
+        get => PlayerPrefs.GetString("authToken");
+        set => PlayerPrefs.SetString("authToken", value);
     }
+
     public int CurerntLevel
     {
-        get { return PlayerPrefs.GetInt("currentLevel"); }
-        set { PlayerPrefs.SetInt("currentLevel", value); }
+        get => PlayerPrefs.GetInt("currentLevel");
+        set => PlayerPrefs.SetInt("currentLevel", value);
     }
+
     public int IsFirstTimeHowToPlayShown
     {
-        get { return PlayerPrefs.GetInt("isFirstTimeHowToPlayShown", 0);}
-        set { PlayerPrefs.SetInt("isFirstTimeHowToPlayShown", value); }
+        get => PlayerPrefs.GetInt("isFirstTimeHowToPlayShown", 0);
+        set => PlayerPrefs.SetInt("isFirstTimeHowToPlayShown", value);
     }
+
     public int IsVibrationOff
     {
-        get { return PlayerPrefs.GetInt("isVibrationOff", 0);}
-        set { PlayerPrefs.SetInt("isVibrationOff", value); }
+        get => PlayerPrefs.GetInt("isVibrationOff", 0);
+        set => PlayerPrefs.SetInt("isVibrationOff", value);
     }
+
     public string LastLevelCompletionTime
     {
-        get { return PlayerPrefs.GetString("lastLevelCompletionTime", string.Empty); }
-        set { PlayerPrefs.SetString("lastLevelCompletionTime", value); }
+        get => PlayerPrefs.GetString("lastLevelCompletionTime", string.Empty);
+        set => PlayerPrefs.SetString("lastLevelCompletionTime", value);
     }
+
     public int IsSoundOff
     {
-        get { return PlayerPrefs.GetInt("isSoundOff", 0); }
+        get => PlayerPrefs.GetInt("isSoundOff", 0);
         set
         {
             PlayerPrefs.SetInt("isSoundOff", value);
-            if (value == 0)
-            {
-                UIManager.GetInstance().SoundManager.ToggleSound(true);
-            }
-            else
-            {
-                UIManager.GetInstance().SoundManager.ToggleSound(false);
-            }
+            UIManager.GetInstance().SoundManager.ToggleSound(value == 0);
         }
     }
+
     public int IsMusicOff
     {
-        get { return PlayerPrefs.GetInt("isMusicOff", 0); }
+        get => PlayerPrefs.GetInt("isMusicOff", 0);
         set
         {
             PlayerPrefs.SetInt("isMusicOff", value);
-            if (value == 0)
-            {
-                UIManager.GetInstance().SoundManager.ToggleMusic(true);
-            }
-            else
-            {
-                UIManager.GetInstance().SoundManager.ToggleMusic(false);
-            }
+            UIManager.GetInstance().SoundManager.ToggleMusic(value == 0);
         }
     }
-    public void GiveAndSaveDailyReward()
-    {
-        //this.signupLoginMetadata = new SignupLoginMetadata();
-        //signupLoginMetadata.authenticationToken = AuthToken;
-
-        //if (GetRewadDay() == 1)
-        //{
-        //    signupLoginMetadata.totalCoins = (playerProfileMetaData.user_profile_data.totalCoins += 100).ToString();
-        //    //SaveCoins(100);
-        //}
-        //else if (GetRewadDay() == 2)
-        //{
-        //    signupLoginMetadata.totalCoins = (playerProfileMetaData.user_profile_data.totalCoins += 150).ToString();
-        //    signupLoginMetadata.totalDiamonds = (playerProfileMetaData.user_profile_data.totalDiamonds += 2).ToString();
-
-        //    //SaveCoins(150);
-        //    //SaveDiamonds(2);
-        //}
-        //else if (GetRewadDay() == 3)
-        //{
-        //    signupLoginMetadata.totalCoins = (playerProfileMetaData.user_profile_data.totalCoins += 200).ToString();
-        //    signupLoginMetadata.totalDiamonds = (playerProfileMetaData.user_profile_data.totalDiamonds += 6).ToString();
-
-        //    //SaveCoins(200);
-        //    //SaveDiamonds(6);
-        //}
-
-        //PlayerPrefs.SetInt("rewardDay", PlayerPrefs.GetInt("rewardDay") + 1);
-        //if (PlayerPrefs.GetInt("rewardDay", 1) > 3)
-        //{
-        //    PlayerPrefs.SetInt("rewardDay", 1);
-        //}
-        //PlayerPrefs.SetString("savedDateTime", DateTime.Today.AddDays(1).ToBinary().ToString());
-
-        //Authentication(signupLoginMetadata, "/update-ludo-user", HTTPMethods.Post, CallbackResourcesUpdate);
-    }
-    public void DeductDiamonds(int amount)
-    {
-        //if (!isGuestUser)
-        //{
-        //    this.signupLoginMetadata = new SignupLoginMetadata();
-        //    signupLoginMetadata.authenticationToken = AuthToken;
-
-        //    signupLoginMetadata.totalDiamonds = (playerProfileMetaData.user_profile_data.totalDiamonds -= amount).ToString();
-        //    Authentication(signupLoginMetadata, "/update-ludo-user", HTTPMethods.Post, CallbackResourcesUpdate);
-        //}
-        //else
-        //{
-        //    GuestUserTotalDiamonds -= amount;
-        //}
-    }
-    public void AddDiamonds(int amount)
-    {
-        //if (!isGuestUser)
-        //{
-        //    this.signupLoginMetadata = new SignupLoginMetadata();
-        //    signupLoginMetadata.authenticationToken = AuthToken;
-
-        //    signupLoginMetadata.totalDiamonds = (playerProfileMetaData.user_profile_data.totalDiamonds += amount).ToString();
-        //    Authentication(signupLoginMetadata, "/update-ludo-user", HTTPMethods.Post, OnProfileUpdated);
-        //}
-        //else
-        //{
-        //    GuestUserTotalDiamonds += amount;
-        //    OnProfileUpdated?.Invoke();
-        //}
-    }
-    public void AddCoins(int amount)
-    {
-        //if (!isGuestUser)
-        //{
-        //    this.signupLoginMetadata = new SignupLoginMetadata();
-        //    signupLoginMetadata.authenticationToken = AuthToken;
-
-        //    signupLoginMetadata.totalCoins = (playerProfileMetaData.user_profile_data.totalCoins += amount).ToString();
-        //    Authentication(signupLoginMetadata, "/update-ludo-user", HTTPMethods.Post, OnProfileUpdated);
-        //}
-        //else
-        //{
-        //    GuestUserTotalCoins += amount;
-        //    OnProfileUpdated?.Invoke();
-        //}
-    }
-
-
 }
