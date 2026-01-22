@@ -68,6 +68,7 @@ public class LevelCompleteUI : MonoBehaviour
 
     public void LoadNextLevel()
     {
+        UIManager.GetInstance().SoundManager.StopConfetti();
         UIManager.GetInstance().BackButtonIsPressed();
         if (UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>())
             UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>().LoadNextLevel();
@@ -76,6 +77,7 @@ public class LevelCompleteUI : MonoBehaviour
 
     public void ReplayLevel()
     {
+        UIManager.GetInstance().SoundManager.StopConfetti();
         UIManager.GetInstance().BackButtonIsPressed();
         if (UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>())
             UIManager.GetInstance().GetCurrentPanel().GetComponent<GamePlayUI>().ReplayLevel();

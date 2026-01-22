@@ -100,6 +100,7 @@ public class SoundManager : MonoBehaviour
     public void PlayLevelFail() => PlaySfx(levelFailSound);
     public void PlayLevelDone() => PlaySfx(levelDoneSound);
     public void PlayConfetti() => PlaySfx(levelCompleteUIConfettiSound);
+    public void StopConfetti() => effectAudioSource.Stop();
     public void PlayButton() => PlaySfx(buttonClickSound);
     #endregion
 }
