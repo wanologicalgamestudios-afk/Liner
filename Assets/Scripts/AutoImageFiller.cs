@@ -37,7 +37,7 @@ public class AutoImageFiller : MonoBehaviour
             if (img != null)
                 img.fillAmount = 1f;
         }
-        layer.enabled = false;
+        layer.enabled = true;
     }
     private void ResetAllFills()
     {
